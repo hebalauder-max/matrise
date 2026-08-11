@@ -402,7 +402,7 @@ function vippsPay(mode){
 }
 
 document.getElementById("btn-vipps").addEventListener("click",function(){vippsPay("full")});
-document.getElementById("btn-skip").addEventListener("click",function(){hasPaid=true;transition(stepPayment,stepQuiz);setTimeout(function(){startQuiz()},450)});
+document.getElementById("btn-skip").addEventListener("click",function(){transition(stepPayment,stepQuiz);setTimeout(function(){startQuiz()},450)});
 document.getElementById("btn-paywall-vipps").addEventListener("click",function(){vippsPay("mid")});
 document.getElementById("btn-paywall-back").addEventListener("click",function(){
   transition(stepPaywall,stepQuiz);
