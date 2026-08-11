@@ -157,6 +157,7 @@ footer a{color:var(--muted)}
 </div>
 </div>
 <script>
+console.log("Matrise v2 script loaded");
 // ========== MATRISE v2 — SINNSMASKINERIET & OPPVÅKNINGSMODELLEN ==========
 
 const questions = [
@@ -554,24 +555,20 @@ const shareBtn=document.getElementById("btn-share");
 
 // ========== TRANSITIONS ==========
 function transition(from,to){
+  console.log("transition:",from.id,"->",to.id);
   from.classList.add("fade-out");
   setTimeout(function(){
     from.classList.add("hidden");
     from.classList.remove("fade-out");
     to.classList.remove("hidden");
     to.classList.add("fade-in");
+    console.log("transition complete:",to.id,"visible");
     setTimeout(function(){to.classList.remove("fade-in")},600);
   },400);
 }
 
 // ========== START ==========
 let redirected=false;
-(function checkReturn(){
-  var params=new URLSearchParams(window.location.search);
-  var paid=params.get("paid");
-  if(paid==="1"){hasPaid=true;redirected=true;transition(stepOpening,stepPayment);setTimeout(function(){transition(stepPayment,stepQuiz);startQuiz()},600)}
-  else if(paid==="mid"){hasPaid=true;redirected=true;currentQuestion=6;transition(stepOpening,stepPayment);setTimeout(function(){transition(stepPayment,stepQuiz);startQuiz()},600)}
-})();
 
 function startOpening(){
   stepOpening.classList.remove("hidden");
@@ -581,9 +578,18 @@ function startOpening(){
   stepLoading.classList.add("hidden");
   stepResult.classList.add("hidden");
 }
+
+// Vipps return-handling — kjører ETTER at DOM er klar
+(function checkReturn(){
+  var params=new URLSearchParams(window.location.search);
+  var paid=params.get("paid");
+  if(paid==="1"){hasPaid=true;redirected=true;transition(stepOpening,stepPayment);setTimeout(function(){transition(stepPayment,stepQuiz);startQuiz()},600)}
+  else if(paid==="mid"){hasPaid=true;redirected=true;currentQuestion=6;transition(stepOpening,stepPayment);setTimeout(function(){transition(stepPayment,stepQuiz);startQuiz()},600)}
+})();
+
 if(!redirected){startOpening()}
 
-document.getElementById("btn-start").addEventListener("click",function(){transition(stepOpening,stepPayment)});
+document.getElementById("btn-start").addEventListener("click",function(){console.log("btn-start clicked!");transition(stepOpening,stepPayment)});
 
 // ========== VIPPS ==========
 function vippsPay(mode){
