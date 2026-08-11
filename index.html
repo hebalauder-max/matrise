@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matrise-testen</title>
+<meta name="description" content="Matrise-testen — Poeng. Prosent. Profil. Hvor fast sitter du i zoo — og hvor nær er du jungelen?">
+<meta property="og:title" content="Matrise-testen">
+<meta property="og:description" content="Poeng. Prosent. Profil. 12 påstander. 5 profiler. Ett speil.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="nb_NO">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><polygon points='50,5 95,95 5,95' fill='%23c0392b'/><text x='50' y='72' text-anchor='middle' fill='%230a0a0a' font-size='30' font-family='monospace' font-weight='bold'>M</text></svg>">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#0a0a0a;--text:#e0ddd6;--muted:#6b6660;--accent:#c0392b;--accent-glow:#e74c3c;--surface:#141210;--border:#2a2520;--radius:3px}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;min-height:100vh;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;line-height:1.7;display:flex;align-items:center;justify-content:center;overflow-x:hidden}
+#app{width:100%;max-width:600px;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem 1.5rem;position:relative}
+.step{width:100%;display:flex;flex-direction:column;align-items:center;text-align:center;gap:1.5rem;transition:opacity .6s ease,transform .6s ease;opacity:1;transform:translateY(0)}
+.step.hidden{display:none}
+.step.fade-out{opacity:0;transform:translateY(-20px);pointer-events:none}
+.step.fade-in{animation:fadeSlideIn .6s ease forwards}
+@keyframes fadeSlideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+.triangle{width:0;height:0;border-left:30px solid transparent;border-right:30px solid transparent;border-bottom:52px solid var(--accent);animation:pulse 3s ease-in-out infinite;margin-bottom:.5rem}
+.triangle.large{border-left-width:45px;border-right-width:45px;border-bottom-width:78px}
+@keyframes pulse{0%,100%{opacity:.85;transform:scale(1)}50%{opacity:1;transform:scale(1.05)}}
+
+.btn{display:inline-block;padding:.85rem 2.2rem;border:2px solid var(--accent);background:transparent;color:var(--accent);font-family:Georgia,serif;font-size:1rem;cursor:pointer;border-radius:var(--radius);letter-spacing:.5px;transition:all .3s ease;text-decoration:none;min-width:180px;text-align:center}
+.btn:hover{background:var(--accent);color:var(--bg);box-shadow:0 0 25px rgba(192,57,43,.25)}
+.btn.small{padding:.5rem 1.2rem;font-size:.8rem;min-width:unset}
+.btn.ghost{border:1px solid rgba(192,57,43,.35);color:rgba(224,221,214,.5);font-size:.75rem;min-width:unset}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent);background:transparent;box-shadow:none}
+
+h1{font-size:2.2rem;font-weight:400;color:var(--accent);letter-spacing:2px;font-family:Georgia,serif;margin-bottom:.3rem}
+h2{font-size:1.2rem;font-weight:400;color:var(--text);opacity:.8}
+h3{font-size:.85rem;font-weight:400;color:var(--accent);opacity:.75;text-transform:uppercase;letter-spacing:4px;font-family:Georgia,serif}
+
+.progress{font-size:.75rem;color:var(--accent);opacity:.65;letter-spacing:1px;margin-bottom:1rem}
+.question-text{font-size:1.2rem;line-height:1.65;max-width:460px;margin-bottom:.5rem}
+.options{margin-top:1rem;width:100%;max-width:460px;display:flex;flex-direction:column;gap:.4rem}
+.opt-btn{width:100%;padding:.7rem 1rem;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:system-ui,sans-serif;font-size:.9rem;cursor:pointer;border-radius:var(--radius);text-align:center;transition:all .2s ease}
+.opt-btn:hover{border-color:var(--accent);background:#1a1512}
+.opt-btn.selected{border-color:var(--accent);background:rgba(192,57,43,.12);color:var(--accent-glow)}
+
+.likert-bar{display:flex;justify-content:space-between;gap:.35rem;width:100%;max-width:460px;margin-top:.5rem}
+.likert-dot{flex:1;text-align:center;font-size:.65rem;color:var(--muted)}
+.likert-labels{display:flex;justify-content:space-between;width:100%;max-width:460px;margin-top:.2rem}
+.likert-label{font-size:.65rem;color:var(--muted);opacity:.7}
+
+.progress-bar-wrap{width:100%;max-width:460px;height:2px;background:var(--border);margin:1rem 0;border-radius:1px;overflow:hidden}
+.progress-bar-fill{height:100%;background:var(--accent);transition:width .3s ease}
+
+.result-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;width:100%;max-width:460px;text-align:center}
+.result-card h3{margin-bottom:1rem}
+.result-card .dominant{font-size:1.4rem;color:var(--accent);font-family:Georgia,serif;margin-bottom:.3rem}
+.result-card .dominant-sub{font-size:.95rem;color:var(--text);opacity:.85;margin-bottom:1rem;line-height:1.5}
+
+.chart-wrap{width:100%;max-width:360px;margin:0 auto 1.5rem}
+.chart-wrap canvas{width:100%!important;height:auto!important}
+
+.arrow-back{position:absolute;top:1rem;left:1rem;background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer;z-index:10}
+.arrow-back:hover{color:var(--accent)}
+
+.paywall-card{background:var(--surface);border:1px solid var(--accent);border-radius:var(--radius);padding:2rem;width:100%;max-width:400px;text-align:center}
+.paywall-card h2{font-size:1.1rem;color:var(--accent);opacity:.9}
+.paywall-card .price{font-size:2.5rem;color:var(--accent);font-family:Georgia,serif;margin:.8rem 0}
+
+.loading-dots{display:flex;gap:.5rem}
+.loading-dots span{width:8px;height:8px;background:var(--accent);border-radius:50%;animation:bounce .6s infinite alternate}
+.loading-dots span:nth-child(2){animation-delay:.2s}
+.loading-dots span:nth-child(3){animation-delay:.4s}
+@keyframes bounce{to{transform:translateY(-12px);opacity:.3}}
+
+footer{text-align:center;font-size:.7rem;color:var(--muted);opacity:.5;margin-top:2rem}
+footer a{color:var(--muted)}
+</style>
+</head>
+<body>
+<div id="app">
+<!-- OPENING -->
+<div class="step" id="step-opening">
+  <div class="triangle"></div>
+  <h1>Matrise-testen</h1>
+  <h2>Poeng. Prosent. Profil.</h2>
+  <p style="max-width:400px;color:var(--muted);font-size:.9rem;line-height:1.6">12 påstander. 5 profiler. Hvor fast sitter du i zoo — og hvor nær er du jungelen?</p>
+  <button class="btn" id="btn-start" style="margin-top:1rem">Start testen</button>
+</div>
+
+<!-- PAYMENT -->
+<div class="step hidden" id="step-payment">
+  <div class="triangle large"></div>
+  <h1>Matrise-testen</h1>
+  <div class="paywall-card">
+    <h2>Lås opp hele testen</h2>
+    <p style="font-size:.9rem;color:var(--muted);line-height:1.5">Du har funnet døren. For å gå gjennom den trenger du nøkkelen.</p>
+    <div class="price">99 kr</div>
+    <button class="btn" id="btn-vipps" style="width:100%;margin-bottom:.8rem">Betal med Vipps</button>
+    <button class="btn ghost" id="btn-skip">Hopp over betaling (test)</button>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div class="step hidden" id="step-quiz">
+  <button class="arrow-back" id="btn-back" style="display:none">←</button>
+  <h3 id="section-label"></h3>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-fill"></div></div>
+  <p class="progress" id="progress-text"></p>
+  <p class="question-text" id="question-text"></p>
+  <div class="likert-bar" id="likert-bar"></div>
+  <div class="likert-labels">
+    <span class="likert-label">Helt uenig</span>
+    <span class="likert-label">Helt enig</span>
+  </div>
+</div>
+
+<!-- PAYWALL (mid-test) -->
+<div class="step hidden" id="step-paywall">
+  <div class="paywall-card">
+    <h2>Du har kommet halvveis</h2>
+    <p style="font-size:.9rem;color:var(--muted);line-height:1.5;margin:.8rem 0">For å fullføre og se ditt resultat, lås opp resten av Matrise-testen.</p>
+    <div class="price">99 kr</div>
+    <button class="btn" id="btn-paywall-vipps" style="width:100%;margin-bottom:.8rem">Betal med Vipps</button>
+    <button class="btn ghost" id="btn-paywall-back">← Tilbake</button>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div class="step hidden" id="step-loading">
+  <div class="loading-dots">
+    <span></span><span></span><span></span>
+  </div>
+  <p style="color:var(--muted);margin-top:1rem">Beregner profilen din...</p>
+</div>
+
+<!-- RESULT -->
+<div class="step hidden" id="step-result">
+  <h3>Din matrise-profil</h3>
+  <div class="chart-wrap"><canvas id="radar-chart"></canvas></div>
+  <div class="result-card">
+    <h3>Din dominerende profil</h3>
+    <div class="dominant" id="result-name"></div>
+    <div class="dominant-sub" id="result-subtitle"></div>
+    <p style="font-size:.85rem;color:var(--muted);line-height:1.6" id="result-desc"></p>
+  </div>
+  <button class="btn" id="btn-share" style="width:100%;max-width:400px">Del ditt resultat</button>
+  <button class="btn ghost" id="btn-restart">Start på nytt</button>
+  <footer style="margin-top:2rem">
+    Matrise-testen — <a href="https://enkelliv.no">ENK</a> | <a href="vilkar.html">Salgsvilkår</a>
+  </footer>
+</div>
+</div>
+
+<script>
+// ========== DATA: 12 PÅSTANDER ==========
+const questions = [
+  {id:1,section:"Slik ser du samfunnet",text:"Jeg føler at samfunnet er designet for å holde folk kontrollert",profile:"Urolig",reversed:false},
+  {id:2,section:"Slik ser du samfunnet",text:"Jeg stoler på at media gir meg et ærlig bilde av verden",profile:"Sovende",reversed:true},
+  {id:3,section:"Slik ser du samfunnet",text:"Jeg merker forskjellen på det folk sier og det de egentlig mener",profile:"Observerende",reversed:false},
+  {id:4,section:"Slik ser du samfunnet",text:"Jeg føler meg mest komfortabel når jeg følger strømmen",profile:"Sovende",reversed:true},
+  {id:5,section:"Slik ser du samfunnet",text:"Jeg stiller spørsmål ved ting de fleste tar for gitt",profile:"Urolig",reversed:false},
+  {id:6,section:"Slik ser du samfunnet",text:"Jeg ser mønstre i samfunnet som andre overser",profile:"Observerende",reversed:false},
+  {id:7,section:"Slik møter du deg selv",text:"Jeg handler i tråd med min egen overbevisning — uavhengig av hva andre tenker",profile:"Omkodende",reversed:false},
+  {id:8,section:"Slik møter du deg selv",text:"Jeg opplever øyeblikk av dyp klarhet hvor alt gir mening",profile:"Opplyst",reversed:false},
+  {id:9,section:"Slik møter du deg selv",text:"Jeg kjenner at jeg er i ferd med å endre noe fundamentalt i livet mitt",profile:"Omkodende",reversed:false},
+  {id:10,section:"Slik møter du deg selv",text:"Andre oppsøker meg for å forstå ting de selv ikke får til å henge sammen",profile:"Opplyst",reversed:false},
+  {id:11,section:"Slik møter du deg selv",text:"Jeg aksepterer min egen dødelighet uten frykt",profile:"Omkodende",reversed:false},
+  {id:12,section:"Slik møter du deg selv",text:"Jeg hjelper aktivt andre med å se det jeg har sett",profile:"Opplyst",reversed:false}
+];
+
+const profiles = {
+  "Sovende":{name:"Sovende",subtitle:"Du sover. Zoo føles som hjemme.",desc:"Maten er god. Buret er varmt. Du har ennå ikke oppdaget at døren aldri var låst. Sovende er ikke en dom — det er et utgangspunkt. Alle starter her. Spørsmålet er: blir du værende?"},
+  "Urolig":{name:"Urolig",subtitle:"Du våkner. Noe skurrer.",desc:"Du kan ikke sette fingeren på det — men du vet at komforten har en pris. Uroen er ikke svakhet. Den er det første tegnet på liv. Du stiller spørsmål. Du merker at kartet og terrenget ikke stemmer. Dette er begynnelsen."},
+  "Observerende":{name:"Observerende",subtitle:"Du ser. Du har zoomet ut.",desc:"Du har oppdaget mønstrene. Du vet at mediebildet er en scene. Du ser forskjellen på det folk sier og det de mener. Men å se er ikke nok. Observatøren risikerer å bli stående på utsiden og bare betrakte. Neste steg krever handling."},
+  "Omkodende":{name:"Omkodende",subtitle:"Du river. Gamle programmer slettes.",desc:"Du stiller spørsmålene de håpet du ikke skulle stille. Du river ned overbevisninger som ikke lenger er dine. Overgangen er smertefull — men du er allerede halvveis ute av zoo. Omkodende er den mest krevende fasen. Den krever mot."},
+  "Opplyst":{name:"Opplyst",subtitle:"Du er våken. Jungelen er hjemme.",desc:"Jungelen er ikke skummel lenger. Du bærer noe andre trenger. Ikke forkynnelse. Ikke svar. Bare nærvær. De som er klare, vil finne deg. Opplyst er ikke slutten — det er begynnelsen på noe helt annet."}
+};
+
+// ========== TILSTAND ==========
+let scores = {"Sovende":0,"Urolig":0,"Observerende":0,"Omkodende":0,"Opplyst":0};
+let answers = [];
+let currentQuestion = 0;
+let currentSection = "";
+let hasPaid = false;
+let chartInstance = null;
+
+const profileOrder = ["Sovende","Urolig","Observerende","Omkodende","Opplyst"];
+
+// ========== DOM ==========
+const stepOpening=document.getElementById("step-opening");
+const stepPayment=document.getElementById("step-payment");
+const stepQuiz=document.getElementById("step-quiz");
+const stepPaywall=document.getElementById("step-paywall");
+const stepLoading=document.getElementById("step-loading");
+const stepResult=document.getElementById("step-result");
+const sectionLabel=document.getElementById("section-label");
+const progressText=document.getElementById("progress-text");
+const progressFill=document.getElementById("progress-fill");
+const questionText=document.getElementById("question-text");
+const likertBar=document.getElementById("likert-bar");
+const btnBack=document.getElementById("btn-back");
+const btnShare=document.getElementById("btn-share");
+const btnRestart=document.getElementById("btn-restart");
+const resultName=document.getElementById("result-name");
+const resultSubtitle=document.getElementById("result-subtitle");
+const resultDesc=document.getElementById("result-desc");
+
+function transition(from,to){from.classList.remove("hidden");from.classList.add("fade-out");setTimeout(function(){from.classList.add("hidden");from.classList.remove("fade-out");to.classList.remove("hidden");to.classList.add("fade-in");setTimeout(function(){to.classList.remove("fade-in")},600)},600)}
+
+// ========== START ==========
+function handleReturnFromVipps(){var p=(new URLSearchParams(window.location.search)).get("paid");if(p==="1"){hasPaid=true;stepPayment.classList.add("hidden");startQuiz();window.history.replaceState({},"","/")}else if(p==="mid"){hasPaid=true;startQuiz();window.history.replaceState({},"","/")}}
+
+function startOpening(){stepOpening.classList.remove("hidden");stepOpening.classList.add("fade-in");setTimeout(function(){stepOpening.classList.remove("fade-in")},600)}
+
+function startPayment(){stepPayment.classList.remove("hidden");stepPayment.classList.add("fade-in");setTimeout(function(){stepPayment.classList.remove("fade-in")},600)}
+
+function startQuiz(){hasPaid=true;stepQuiz.classList.remove("hidden");stepQuiz.classList.add("fade-in");setTimeout(function(){stepQuiz.classList.remove("fade-in")},600);renderQuestion()}
+
+document.getElementById("btn-start").addEventListener("click",function(){transition(stepOpening,stepPayment)});
+
+// ========== VIPPS ==========
+function vippsPay(mode){
+  var body={amount:9900,product:"matrise",returnUrl:"https://matrise.enkelliv.no?paid="+(mode==="mid"?"mid":"1")};
+  fetch("https://vaaknopp-backend.vercel.app/api/create-payment",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)})
+  .then(function(r){return r.json()})
+  .then(function(data){if(data.url){window.location.href=data.url}else{alert("Kunne ikke starte betaling. Prov igjen.")}})
+  .catch(function(){alert("Feil ved kontakt med betalingssystemet. Prov igjen.")})
+}
+
+document.getElementById("btn-vipps").addEventListener("click",function(){vippsPay("full")});
+document.getElementById("btn-skip").addEventListener("click",function(){hasPaid=true;transition(stepPayment,stepQuiz);startQuiz()});
+document.getElementById("btn-paywall-vipps").addEventListener("click",function(){vippsPay("mid")});
+document.getElementById("btn-paywall-back").addEventListener("click",function(){transition(stepPaywall,stepQuiz);if(answers.length>0){answers.pop();currentQuestion--;var q=questions[currentQuestion];currentSection=q.section;sectionLabel.textContent=currentSection;renderQuestion()}});
+
+// ========== QUIZ ==========
+function renderQuestion(){
+  if(currentQuestion>=questions.length){btnBack.style.display="none";transition(stepQuiz,stepLoading);setTimeout(showResult,2200);return}
+  if(currentQuestion===6&&!hasPaid){transition(stepQuiz,stepPaywall);return}
+  var q=questions[currentQuestion];
+  if(q.section!==currentSection){currentSection=q.section;sectionLabel.textContent=currentSection;sectionLabel.style.opacity="1"}
+  progressText.textContent="Påstand "+(currentQuestion+1)+" av "+(hasPaid?12:6);
+  progressFill.style.width=((currentQuestion/(hasPaid?12:6))*100)+"%";
+  questionText.textContent=q.text;
+
+  var currentAnswer=null;
+  for(var i=0;i<answers.length;i++){if(answers[i].questionId===q.id){currentAnswer=answers[i].value;break}}
+
+  likertBar.innerHTML="";
+  for(var v=1;v<=5;v++){
+    (function(val){
+      var dot=document.createElement("button");
+      dot.className="opt-btn likert-btn";
+      dot.textContent=val;
+      dot.style.flex="1";
+      if(currentAnswer===val)dot.classList.add("selected");
+      dot.addEventListener("click",function(){selectAnswer(val)});
+      likertBar.appendChild(dot);
+    })(v)
+  }
+
+  if(currentQuestion===0){btnBack.style.display="none"}else{btnBack.style.display="block"}
+}
+
+function selectAnswer(value){
+  var q=questions[currentQuestion];
+  // remove previous answer for this question
+  answers=answers.filter(function(a){return a.questionId!==q.id});
+  // also remove from scores
+  for(var i=0;i<answers.length;i++){if(answers[i].questionId===q.id)continue}
+  // we need to recalculate from scratch — simpler: remove this question's old score
+  var oldIdx=-1;
+  for(var i=0;i<answers.length;i++){if(answers[i].questionId===q.id){oldIdx=i;break}}
+  if(oldIdx>=0){
+    var oldA=answers[oldIdx];
+    var oldScore=q.reversed?(6-oldA.value):oldA.value;
+    scores[q.profile]-=oldScore;
+  }
+  
+  // add new answer
+  answers.push({questionId:q.id,value:value,profile:q.profile});
+  var score=q.reversed?(6-value):value;
+  scores[q.profile]+=score;
+
+  // animate
+  var btns=likertBar.querySelectorAll(".likert-btn");
+  btns.forEach(function(b){b.classList.remove("selected")});
+  btns[value-1].classList.add("selected");
+
+  // advance after short delay
+  setTimeout(function(){
+    currentQuestion++;
+    renderQuestion();
+  },400)
+}
+
+document.getElementById("btn-back").addEventListener("click",function(){
+  if(currentQuestion<=0||answers.length===0)return;
+  var last=answers.pop();
+  var q=questions[currentQuestion-1];
+  var score=q.reversed?(6-last.value):last.value;
+  scores[last.profile]-=score;
+  currentQuestion--;
+  currentSection=questions[currentQuestion].section;
+  sectionLabel.textContent=currentSection;
+  renderQuestion()
+});
+
+// ========== RESULTAT ==========
+function calcPercentages(){
+  var maxPerProfile={"Sovende":10,"Urolig":10,"Observerende":10,"Omkodende":15,"Opplyst":15};
+  var percentages={};
+  for(var i=0;i<profileOrder.length;i++){
+    var p=profileOrder[i];
+    percentages[p]=Math.round((scores[p]/maxPerProfile[p])*100)
+  }
+  return percentages
+}
+
+function getDominantProfile(percentages){
+  var maxPct=0;var dom=[];
+  for(var i=0;i<profileOrder.length;i++){
+    var p=profileOrder[i];
+    if(percentages[p]>maxPct){maxPct=percentages[p];dom=[p]}
+    else if(percentages[p]===maxPct){dom.push(p)}
+  }
+  return dom[0]
+}
+
+function showResult(){
+  var pct=calcPercentages();
+  var dom=getDominantProfile(pct);
+  var arch=profiles[dom];
+
+  resultName.textContent=arch.name;
+  resultSubtitle.textContent=arch.subtitle;
+  resultDesc.textContent=arch.desc;
+
+  transition(stepLoading,stepResult);
+  setTimeout(drawChart,300)
+}
+
+function drawChart(){
+  if(chartInstance){chartInstance.destroy()}
+  var pct=calcPercentages();
+  var ctx=document.getElementById("radar-chart").getContext("2d");
+
+  chartInstance=new Chart(ctx,{
+    type:"radar",
+    data:{
+      labels:["Sovende","Urolig","Observerende","Omkodende","Opplyst"],
+      datasets:[{
+        label:"Din profil (%)",
+        data:[pct["Sovende"],pct["Urolig"],pct["Observerende"],pct["Omkodende"],pct["Opplyst"]],
+        backgroundColor:"rgba(192,57,43,0.15)",
+        borderColor:"rgba(192,57,43,0.9)",
+        borderWidth:2,
+        pointBackgroundColor:"rgba(192,57,43,1)",
+        pointBorderColor:"#0a0a0a",
+        pointBorderWidth:1,
+        pointRadius:4,
+        pointHoverRadius:6
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:true,
+      scales:{
+        r:{
+          beginAtZero:true,
+          max:100,
+          ticks:{stepSize:20,backdropColor:"transparent",color:"#6b6660",font:{size:9},callback:function(v){return v+"%"}},
+          pointLabels:{color:"#e0ddd6",font:{size:11,family:"Georgia,serif"}},
+          grid:{color:"rgba(192,57,43,0.1)"},
+          angleLines:{color:"rgba(192,57,43,0.1)"}
+        }
+      },
+      plugins:{legend:{display:false}}
+    }
+  })
+}
+
+// ========== DEL ==========
+document.getElementById("btn-share").addEventListener("click",function(){
+  var nm=resultName.textContent;
+  var sub=resultSubtitle.textContent;
+  var title="Matrise-testen — Jeg er "+nm;
+  var text=nm+": "+sub;
+  var url="https://matrise.enkelliv.no";
+  if(navigator.share){navigator.share({title:title,text:text,url:url}).catch(function(){});return}
+  var full=title+"\n\n"+text+"\n\n"+url;
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(full).then(function(){document.getElementById("btn-share").textContent="Kopiert!";setTimeout(function(){document.getElementById("btn-share").textContent="Del ditt resultat"},2000)}).catch(function(){alert(full)})}else{alert(full)}
+});
+
+// ========== RESTART ==========
+document.getElementById("btn-restart").addEventListener("click",function(e){
+  e.preventDefault();
+  scores={"Sovende":0,"Urolig":0,"Observerende":0,"Omkodende":0,"Opplyst":0};
+  currentQuestion=0;answers=[];currentSection="";
+  if(chartInstance){chartInstance.destroy();chartInstance=null}
+  transition(stepResult,stepOpening);
+  setTimeout(function(){stepPayment.classList.add("hidden");stepPayment.classList.remove("fade-in");startOpening()},900)
+});
+
+// ========== INIT ==========
+handleReturnFromVipps();
+if(!hasPaid){startOpening()}
+</script>
+</body>
+</html>
