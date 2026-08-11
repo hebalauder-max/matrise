@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Matrise-testen</title>
-<meta name="description" content="Matrise-testen — To kapitler. Ett speil. Våknopp + Matrise.">
+<meta name="description" content="Matrise-testen â€” To kapitler. Ett speil. VÃ¥knopp + Matrise.">
 <meta property="og:title" content="Matrise-testen">
-<meta property="og:description" content="Våknopp + Matrise. 24 spørsmål. Din arketype. Din profil. Ett speil.">
+<meta property="og:description" content="VÃ¥knopp + Matrise. 24 spÃ¸rsmÃ¥l. Din arketype. Din profil. Ett speil.">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="nb_NO">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><polygon points='50,5 95,95 5,95' fill='%23c0392b'/><text x='50' y='72' text-anchor='middle' fill='%230a0a0a' font-size='30' font-family='monospace' font-weight='bold'>M</text></svg>">
@@ -126,11 +126,11 @@ footer{font-size:.6rem;color:var(--muted);opacity:.5;margin-top:1rem;text-align:
 <h1>Matrise-testen</h1>
 <div class="landing-grid">
 <div class="landing-card vaknopp">
-<h3>Våknopp</h3>
-<div class="card-subtitle">Formelen som åpner din Pandoras eske</div>
+<h3>VÃ¥knopp</h3>
+<div class="card-subtitle">Formelen som Ã¥pner din Pandoras eske</div>
 <ul>
-<li>Hvem er du — under overflaten?</li>
-<li>12 spørsmål ingen stiller deg</li>
+<li>Hvem er du â€” under overflaten?</li>
+<li>12 spÃ¸rsmÃ¥l ingen stiller deg</li>
 <li>5 arketyper</li>
 </ul>
 </div>
@@ -138,33 +138,34 @@ footer{font-size:.6rem;color:var(--muted);opacity:.5;margin-top:1rem;text-align:
 <h3>Matrise</h3>
 <div class="card-subtitle">Poeng. Prosent. Profil.</div>
 <ul>
-<li>Hvor står du — i maskineriet?</li>
-<li>12 påstander, 4 nivåer</li>
+<li>Hvor stÃ¥r du â€” i maskineriet?</li>
+<li>12 pÃ¥stander, 4 nivÃ¥er</li>
 <li>5 profiler</li>
 </ul>
 </div>
 </div>
-<div class="landing-arrow">▼</div>
+<div class="landing-arrow">â–¼</div>
 <div class="landing-result-label">Resultat</div>
 <p style="font-size:.8rem;color:var(--muted);max-width:400px">Ett sertifikat. Din arketype + din profil.<br>Spektrumlinje + radar. Last ned. Del.</p>
 <button class="btn" id="btn-start" style="margin-top:.3rem">Start testen</button>
-<footer>24 spørsmål · ~10 minutter · 99 kr</footer>
+<footer>24 spÃ¸rsmÃ¥l Â· ~10 minutter Â· Gratis i lanseringsfasen</footer>
 </div>
 
 <!-- ============ PAYMENT ============ -->
 <div class="step hidden" id="step-payment">
 <div class="paywall-card">
-<h2>Lås opp Matrise-testen</h2>
-<p style="font-size:.85rem;color:var(--muted);line-height:1.5">Våknopp + Matrise. To kapitler. Ett speil.</p>
-<div class="price">99 kr</div>
-<button class="btn" id="btn-vipps" style="width:100%;margin-bottom:.7rem">Betal med Vipps</button>
-<button class="btn ghost" id="btn-skip">Hopp over (test)</button>
+<h2>LÃ¥s opp Matrise-testen</h2>
+<p style="font-size:.85rem;color:var(--muted);line-height:1.5">VÃ¥knopp + Matrise. To kapitler. Ett speil.</p>
+<p style="font-size:.7rem;color:var(--gold);margin-bottom:.4rem;font-style:italic">99 kr fra 1. september Â· Gratis i lanseringsfasen nÃ¥</p>
+<button class="btn" id="btn-skip" style="width:100%;margin-bottom:.7rem">Start testen gratis</button>
+<button class="btn ghost" id="btn-vipps">Betal med Vipps (kommer snart)</button>
 </div>
 </div>
 
+
 <!-- ============ VAKNOPP QUIZ ============ -->
 <div class="step hidden" id="step-quiz-vaknopp">
-<div class="section-badge" id="vaknopp-section">Våknopp</div>
+<div class="section-badge" id="vaknopp-section">VÃ¥knopp</div>
 <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-fill-vaknopp"></div></div>
 <p class="progress-text" id="progress-text-vaknopp"></p>
 <p class="question-text" id="question-text-vaknopp"></p>
@@ -173,12 +174,12 @@ footer{font-size:.6rem;color:var(--muted);opacity:.5;margin-top:1rem;text-align:
 
 <!-- ============ TRANSITION ============ -->
 <div class="step hidden" id="step-transition">
-<h2 style="color:var(--gold)">Våknopp fullført</h2>
-<p style="font-size:.9rem;color:var(--muted);max-width:380px">Du har svart på spørsmålene ingen stiller. Nå venter maskineriet.</p>
+<h2 style="color:var(--gold)">VÃ¥knopp fullfÃ¸rt</h2>
+<p style="font-size:.9rem;color:var(--muted);max-width:380px">Du har svart pÃ¥ spÃ¸rsmÃ¥lene ingen stiller. NÃ¥ venter maskineriet.</p>
 <div class="landing-card matrise" style="max-width:300px">
 <h3>Matrise</h3>
 <div class="card-subtitle">Poeng. Prosent. Profil.</div>
-<p style="font-size:.7rem;color:var(--muted)">12 påstander. 4 nivåer. Hvor fast sitter du i zoo?</p>
+<p style="font-size:.7rem;color:var(--muted)">12 pÃ¥stander. 4 nivÃ¥er. Hvor fast sitter du i zoo?</p>
 </div>
 <button class="btn" id="btn-transition">Fortsett</button>
 </div>
@@ -204,7 +205,7 @@ footer{font-size:.6rem;color:var(--muted);opacity:.5;margin-top:1rem;text-align:
 <div class="cert-seal"></div>
 <div class="cert-title">Matrise-testen</div>
 <div class="cert-headline">Sertifikat</div>
-<div class="cert-subtitle">Våknopp + Matrise</div>
+<div class="cert-subtitle">VÃ¥knopp + Matrise</div>
 <div class="cert-divider"></div>
 
 <div class="triangle-wrap">
@@ -216,8 +217,8 @@ footer{font-size:.6rem;color:var(--muted);opacity:.5;margin-top:1rem;text-align:
 </svg>
 <div class="triangle-inner">
 <div class="t-half t-half-left">
-<div class="t-label">Våknopp</div>
-<div class="t-name" id="cert-archetype-name">Søkeren</div>
+<div class="t-label">VÃ¥knopp</div>
+<div class="t-name" id="cert-archetype-name">SÃ¸keren</div>
 <div class="t-sub" id="cert-archetype-sub">Du leter...</div>
 </div>
 <div class="t-half t-half-right">
@@ -232,7 +233,7 @@ footer{font-size:.6rem;color:var(--muted);opacity:.5;margin-top:1rem;text-align:
 <div class="spectrum-labels"><span>Sovende</span><span>Opplyst</span></div>
 <div class="spectrum-bar"><div class="spectrum-dot" id="spectrum-dot"></div></div>
 <div class="spectrum-score">Din poengsum: <strong id="spectrum-score-num">67</strong></div>
-<div class="spectrum-position" id="spectrum-position">«Du er her.»</div>
+<div class="spectrum-position" id="spectrum-position">Â«Du er her.Â»</div>
 <div class="spectrum-population" id="spectrum-population"></div>
 </div>
 
@@ -241,7 +242,7 @@ footer{font-size:.6rem;color:var(--muted);opacity:.5;margin-top:1rem;text-align:
 <p class="cert-description" id="cert-desc-full"></p>
 
 <div class="cert-divider"></div>
-<div class="cert-footer">Matrise-testen · ENK</div>
+<div class="cert-footer">Matrise-testen Â· ENK</div>
 <div class="cert-url">matrise.enkelliv.no</div>
 </div>
 
@@ -249,8 +250,8 @@ footer{font-size:.6rem;color:var(--muted);opacity:.5;margin-top:1rem;text-align:
 <button class="btn small" id="btn-download">Last ned bilde</button>
 <button class="btn small" id="btn-share">Del resultat</button>
 </div>
-<button class="btn ghost" id="btn-restart" style="margin-top:.5rem">Start på nytt</button>
-<footer>Matrise-testen · <a href="https://enkelliv.no" style="color:var(--muted)">ENK</a></footer>
+<button class="btn ghost" id="btn-restart" style="margin-top:.5rem">Start pÃ¥ nytt</button>
+<footer>Matrise-testen Â· <a href="https://enkelliv.no" style="color:var(--muted)">ENK</a></footer>
 </div>
 </div>
 
@@ -258,38 +259,38 @@ footer{font-size:.6rem;color:var(--muted);opacity:.5;margin-top:1rem;text-align:
 <script>
 // ==================== DATA: VAKNOPP QUESTIONS ====================
 var vaknoppQuestions = [
-  {id:1,section:"Slik ser du verden utenfor deg",text:"Når du ser på en fremmed — hva legger du merke til først?",options:[
-    {text:"Øynene deres",archetype:"Speilet"},{text:"Hva de har på seg",archetype:"Søkeren"},{text:"Stemningen rundt dem",archetype:"Vandreren"},{text:"Om de ser glade eller triste ut",archetype:"Broen"}]},
-  {id:2,section:"Slik ser du verden utenfor deg",text:"Hva plager deg mest ved verden akkurat nå?",options:[
-    {text:"Urettferdighet",archetype:"Broen"},{text:"At ingen lytter til hverandre",archetype:"Speilet"},{text:"Alt bråket — stillheten er borte",archetype:"Lyset"},{text:"Jeg vet ikke — jeg kjenner mest på mitt eget",archetype:"Søkeren"}]},
-  {id:3,section:"Slik ser du verden utenfor deg",text:"Hva stoler du mest på?",options:[
-    {text:"Det jeg kan se og ta på",archetype:"Søkeren"},{text:"Magefølelsen min",archetype:"Vandreren"},{text:"Mønstrene — ting som gjentar seg",archetype:"Broen"},{text:"Det stille svaret som kommer når jeg slutter å lete",archetype:"Lyset"}]},
-  {id:4,section:"Slik ser du verden utenfor deg",text:"Hva definerer et menneske — mest av alt?",options:[
-    {text:"Handlingene deres",archetype:"Søkeren"},{text:"Intensjonene deres",archetype:"Speilet"},{text:"Måten de får andre til å føle seg",archetype:"Broen"},{text:"Ingenting — og alt. Vi er mer enn én definisjon",archetype:"Lyset"}]},
-  {id:5,section:"Slik ser du deg selv",text:"Når du er alene — hvor går tankene dine?",options:[
-    {text:"Til fortiden — ting jeg skulle gjort annerledes",archetype:"Søkeren"},{text:"Til fremtiden — hva som kommer",archetype:"Vandreren"},{text:"Til nået — jeg er her, dette er nok",archetype:"Lyset"},{text:"Til et sted mellom — jeg dagdrømmer, forsvinner",archetype:"Speilet"}]},
+  {id:1,section:"Slik ser du verden utenfor deg",text:"NÃ¥r du ser pÃ¥ en fremmed â€” hva legger du merke til fÃ¸rst?",options:[
+    {text:"Ã˜ynene deres",archetype:"Speilet"},{text:"Hva de har pÃ¥ seg",archetype:"SÃ¸keren"},{text:"Stemningen rundt dem",archetype:"Vandreren"},{text:"Om de ser glade eller triste ut",archetype:"Broen"}]},
+  {id:2,section:"Slik ser du verden utenfor deg",text:"Hva plager deg mest ved verden akkurat nÃ¥?",options:[
+    {text:"Urettferdighet",archetype:"Broen"},{text:"At ingen lytter til hverandre",archetype:"Speilet"},{text:"Alt brÃ¥ket â€” stillheten er borte",archetype:"Lyset"},{text:"Jeg vet ikke â€” jeg kjenner mest pÃ¥ mitt eget",archetype:"SÃ¸keren"}]},
+  {id:3,section:"Slik ser du verden utenfor deg",text:"Hva stoler du mest pÃ¥?",options:[
+    {text:"Det jeg kan se og ta pÃ¥",archetype:"SÃ¸keren"},{text:"MagefÃ¸lelsen min",archetype:"Vandreren"},{text:"MÃ¸nstrene â€” ting som gjentar seg",archetype:"Broen"},{text:"Det stille svaret som kommer nÃ¥r jeg slutter Ã¥ lete",archetype:"Lyset"}]},
+  {id:4,section:"Slik ser du verden utenfor deg",text:"Hva definerer et menneske â€” mest av alt?",options:[
+    {text:"Handlingene deres",archetype:"SÃ¸keren"},{text:"Intensjonene deres",archetype:"Speilet"},{text:"MÃ¥ten de fÃ¥r andre til Ã¥ fÃ¸le seg",archetype:"Broen"},{text:"Ingenting â€” og alt. Vi er mer enn Ã©n definisjon",archetype:"Lyset"}]},
+  {id:5,section:"Slik ser du deg selv",text:"NÃ¥r du er alene â€” hvor gÃ¥r tankene dine?",options:[
+    {text:"Til fortiden â€” ting jeg skulle gjort annerledes",archetype:"SÃ¸keren"},{text:"Til fremtiden â€” hva som kommer",archetype:"Vandreren"},{text:"Til nÃ¥et â€” jeg er her, dette er nok",archetype:"Lyset"},{text:"Til et sted mellom â€” jeg dagdrÃ¸mmer, forsvinner",archetype:"Speilet"}]},
   {id:6,section:"Slik ser du deg selv",text:"Hva er ditt forhold til stillhet?",options:[
-    {text:"Den gjør meg urolig",archetype:"Søkeren"},{text:"Jeg søker den — men finner den sjelden",archetype:"Vandreren"},{text:"Den er der. Jeg har bare ikke lyttet før.",archetype:"Speilet"},{text:"Stillhet og jeg er gamle venner",archetype:"Lyset"}]},
-  {id:7,section:"Slik ser du deg selv",text:"Hva er den sterkeste følelsen du kjenner akkurat nå?",options:[
-    {text:"Lengsel — etter noe jeg ikke kan navngi",archetype:"Søkeren"},{text:"Nysgjerrighet — hva venter rundt hjørnet?",archetype:"Vandreren"},{text:"Takknemlighet — for det som er, her og nå",archetype:"Lyset"},{text:"En blanding. Alt på en gang",archetype:"Speilet"}]},
-  {id:8,section:"Slik ser du deg selv",text:"Hva dømmer du hardest ved deg selv?",options:[
-    {text:"At jeg ikke har kommet lenger",archetype:"Søkeren"},{text:"At jeg noen ganger ikke bryr meg nok",archetype:"Broen"},{text:"At jeg tviler — på alt, hele tiden",archetype:"Vandreren"},{text:"Jeg har sluttet å dømme. Jeg bare er.",archetype:"Lyset"}]},
-  {id:9,section:"Det du bærer på — og er klar for",text:"Hva tror du er meningen med livet ditt?",options:[
-    {text:"Jeg leter fortsatt",archetype:"Søkeren"},{text:"Å finne ut av det — én dag av gangen",archetype:"Vandreren"},{text:"Å være noe for noen",archetype:"Broen"},{text:"Å våkne. Og hjelpe andre å våkne",archetype:"Lyset"}]},
-  {id:10,section:"Det du bærer på — og er klar for",text:"Hva er ditt forhold til døden?",options:[
-    {text:"Jeg unngår å tenke på den",archetype:"Søkeren"},{text:"Den skremmer meg — men jeg vet den er der",archetype:"Vandreren"},{text:"Den gir livet mening",archetype:"Speilet"},{text:"En dør. Ikke en vegg",archetype:"Lyset"}]},
-  {id:11,section:"Det du bærer på — og er klar for",text:"Hva trenger du mest akkurat nå?",options:[
-    {text:"Svar",archetype:"Søkeren"},{text:"Retning",archetype:"Vandreren"},{text:"Sammenheng",archetype:"Speilet"},{text:"Ro",archetype:"Lyset"}]},
-  {id:12,section:"Det du bærer på — og er klar for",text:"Hvis du kunne gi én gave til verden — hva ville det vært?",options:[
-    {text:"Sannhet",archetype:"Speilet"},{text:"Fred",archetype:"Broen"},{text:"At ingen følte seg alene",archetype:"Vandreren"},{text:"Stillhet — så alle kunne høre seg selv",archetype:"Lyset"}]}
+    {text:"Den gjÃ¸r meg urolig",archetype:"SÃ¸keren"},{text:"Jeg sÃ¸ker den â€” men finner den sjelden",archetype:"Vandreren"},{text:"Den er der. Jeg har bare ikke lyttet fÃ¸r.",archetype:"Speilet"},{text:"Stillhet og jeg er gamle venner",archetype:"Lyset"}]},
+  {id:7,section:"Slik ser du deg selv",text:"Hva er den sterkeste fÃ¸lelsen du kjenner akkurat nÃ¥?",options:[
+    {text:"Lengsel â€” etter noe jeg ikke kan navngi",archetype:"SÃ¸keren"},{text:"Nysgjerrighet â€” hva venter rundt hjÃ¸rnet?",archetype:"Vandreren"},{text:"Takknemlighet â€” for det som er, her og nÃ¥",archetype:"Lyset"},{text:"En blanding. Alt pÃ¥ en gang",archetype:"Speilet"}]},
+  {id:8,section:"Slik ser du deg selv",text:"Hva dÃ¸mmer du hardest ved deg selv?",options:[
+    {text:"At jeg ikke har kommet lenger",archetype:"SÃ¸keren"},{text:"At jeg noen ganger ikke bryr meg nok",archetype:"Broen"},{text:"At jeg tviler â€” pÃ¥ alt, hele tiden",archetype:"Vandreren"},{text:"Jeg har sluttet Ã¥ dÃ¸mme. Jeg bare er.",archetype:"Lyset"}]},
+  {id:9,section:"Det du bÃ¦rer pÃ¥ â€” og er klar for",text:"Hva tror du er meningen med livet ditt?",options:[
+    {text:"Jeg leter fortsatt",archetype:"SÃ¸keren"},{text:"Ã… finne ut av det â€” Ã©n dag av gangen",archetype:"Vandreren"},{text:"Ã… vÃ¦re noe for noen",archetype:"Broen"},{text:"Ã… vÃ¥kne. Og hjelpe andre Ã¥ vÃ¥kne",archetype:"Lyset"}]},
+  {id:10,section:"Det du bÃ¦rer pÃ¥ â€” og er klar for",text:"Hva er ditt forhold til dÃ¸den?",options:[
+    {text:"Jeg unngÃ¥r Ã¥ tenke pÃ¥ den",archetype:"SÃ¸keren"},{text:"Den skremmer meg â€” men jeg vet den er der",archetype:"Vandreren"},{text:"Den gir livet mening",archetype:"Speilet"},{text:"En dÃ¸r. Ikke en vegg",archetype:"Lyset"}]},
+  {id:11,section:"Det du bÃ¦rer pÃ¥ â€” og er klar for",text:"Hva trenger du mest akkurat nÃ¥?",options:[
+    {text:"Svar",archetype:"SÃ¸keren"},{text:"Retning",archetype:"Vandreren"},{text:"Sammenheng",archetype:"Speilet"},{text:"Ro",archetype:"Lyset"}]},
+  {id:12,section:"Det du bÃ¦rer pÃ¥ â€” og er klar for",text:"Hvis du kunne gi Ã©n gave til verden â€” hva ville det vÃ¦rt?",options:[
+    {text:"Sannhet",archetype:"Speilet"},{text:"Fred",archetype:"Broen"},{text:"At ingen fÃ¸lte seg alene",archetype:"Vandreren"},{text:"Stillhet â€” sÃ¥ alle kunne hÃ¸re seg selv",archetype:"Lyset"}]}
 ];
 
 var vaknoppArchetypes = {
-  "Søkeren":{name:"Søkeren",subtitle:"Du leter. Du vet ikke alltid hva — men du vet at noe mangler.",desc:"Du kjenner en lengsel du ikke kan sette ord på. Som et savn uten navn. Du har lett i bøker, i samtaler, i andres øyne — men det du søker, er kanskje nærmere enn du tror. Søkeren er ikke tapt. Søkeren er i bevegelse. Og spørsmålet er ofte viktigere enn svaret."},
-  "Vandreren":{name:"Vandreren",subtitle:"Du har begynt å se mønstre. Spørsmålene har åpnet seg.",desc:"Du går. Én fot foran den andre. Noen ganger uten kart — men du går likevel. Du har begynt å merke at ting henger sammen. En samtale her. En bok der. En tilfeldighet som ikke føltes tilfeldig. Vandreren spør ikke «er jeg fremme snart?» — vandreren vet at veien er stedet."},
-  "Speilet":{name:"Speilet",subtitle:"Du ser deg selv klart. Og gjennom deg — andre.",desc:"Du har stått stille lenge nok til å se ditt eget speilbilde. Ikke den du ønsker du var. Ikke den du later som. Deg. Og i den klarheten har du oppdaget noe: når du ser deg selv ærlig, ser du også andre klarere. Speilet dømmer ikke. Speilet viser."},
-  "Broen":{name:"Broen",subtitle:"Du ser sammenhengen mellom alt. Du forbinder.",desc:"Du er limet. Den andre snakker, du hører det usagte. To mennesker står langt fra hverandre, du ser hva de deler. Broen trenger ikke å være sterkest — den trenger bare å være der. Du bærer andres vekt uten å knekke. Ikke fordi du må. Fordi du kan."},
-  "Lyset":{name:"Lyset",subtitle:"Du har våknet. Du ser hva som alltid var der.",desc:"Du har sett gjennom sløret. Stillheten er ditt hjem. Du vet at mørket ikke er fienden — bare fravær. Du bærer noe varmt i deg, og du tenner det i andre uten å mene å gjøre det. Lyset preker ikke. Lyset bare er. Og det er nok."}
+  "SÃ¸keren":{name:"SÃ¸keren",subtitle:"Du leter. Du vet ikke alltid hva â€” men du vet at noe mangler.",desc:"Du kjenner en lengsel du ikke kan sette ord pÃ¥. Som et savn uten navn. Du har lett i bÃ¸ker, i samtaler, i andres Ã¸yne â€” men det du sÃ¸ker, er kanskje nÃ¦rmere enn du tror. SÃ¸keren er ikke tapt. SÃ¸keren er i bevegelse. Og spÃ¸rsmÃ¥let er ofte viktigere enn svaret."},
+  "Vandreren":{name:"Vandreren",subtitle:"Du har begynt Ã¥ se mÃ¸nstre. SpÃ¸rsmÃ¥lene har Ã¥pnet seg.",desc:"Du gÃ¥r. Ã‰n fot foran den andre. Noen ganger uten kart â€” men du gÃ¥r likevel. Du har begynt Ã¥ merke at ting henger sammen. En samtale her. En bok der. En tilfeldighet som ikke fÃ¸ltes tilfeldig. Vandreren spÃ¸r ikke Â«er jeg fremme snart?Â» â€” vandreren vet at veien er stedet."},
+  "Speilet":{name:"Speilet",subtitle:"Du ser deg selv klart. Og gjennom deg â€” andre.",desc:"Du har stÃ¥tt stille lenge nok til Ã¥ se ditt eget speilbilde. Ikke den du Ã¸nsker du var. Ikke den du later som. Deg. Og i den klarheten har du oppdaget noe: nÃ¥r du ser deg selv Ã¦rlig, ser du ogsÃ¥ andre klarere. Speilet dÃ¸mmer ikke. Speilet viser."},
+  "Broen":{name:"Broen",subtitle:"Du ser sammenhengen mellom alt. Du forbinder.",desc:"Du er limet. Den andre snakker, du hÃ¸rer det usagte. To mennesker stÃ¥r langt fra hverandre, du ser hva de deler. Broen trenger ikke Ã¥ vÃ¦re sterkest â€” den trenger bare Ã¥ vÃ¦re der. Du bÃ¦rer andres vekt uten Ã¥ knekke. Ikke fordi du mÃ¥. Fordi du kan."},
+  "Lyset":{name:"Lyset",subtitle:"Du har vÃ¥knet. Du ser hva som alltid var der.",desc:"Du har sett gjennom slÃ¸ret. Stillheten er ditt hjem. Du vet at mÃ¸rket ikke er fienden â€” bare fravÃ¦r. Du bÃ¦rer noe varmt i deg, og du tenner det i andre uten Ã¥ mene Ã¥ gjÃ¸re det. Lyset preker ikke. Lyset bare er. Og det er nok."}
 };
 
 // ==================== DATA: MATRISE QUESTIONS ====================
@@ -332,7 +333,7 @@ var matriseProfiles = {
 var phase = "landing"; // landing | payment | vaknopp | matrise | result
 var currentVaknoppQ = 0;
 var currentMatriseQ = 0;
-var vaknoppAnswers = []; // {archetype: "Søkeren"}
+var vaknoppAnswers = []; // {archetype: "SÃ¸keren"}
 var matriseAnswers = []; // {points: N, level: N}
 var hasPaid = false;
 var chartInstance = null;
