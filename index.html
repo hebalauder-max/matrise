@@ -136,18 +136,12 @@ footer a{color:var(--muted)}
 <!-- RESULT -->
 <div class="step hidden" id="step-result">
   <h3>Din matrise-profil</h3>
-  <div class="chart-wrap"><canvas id="radarChart"></canvas></div>
+  <div class="chart-wrap"><canvas id="radar-chart"></canvas></div>
   <div class="result-card">
     <h3>Din dominerende profil</h3>
-    <div class="dominant" id="result-title"></div>
+    <div class="dominant" id="result-name"></div>
     <div class="dominant-sub" id="result-subtitle"></div>
     <p style="font-size:.85rem;color:var(--muted);line-height:1.6" id="result-desc"></p>
-    <div style="display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-top:.5rem;font-size:.75rem;color:var(--muted)">
-      <span id="result-percent" style="color:var(--accent);font-size:1.4rem;font-weight:bold;display:block;width:100%;text-align:center"></span>
-      <span id="result-range" style="background:var(--surface);padding:.2rem .6rem;border-radius:3px"></span>
-      <span id="result-demografi" style="background:var(--surface);padding:.2rem .6rem;border-radius:3px"></span>
-    </div>
-    <div style="margin-top:.3rem;font-size:.8rem;color:var(--accent);opacity:.8;text-align:center" id="result-status"></div>
   </div>
   <button class="btn" id="btn-share" style="width:100%;max-width:400px">Del ditt resultat</button>
   <button class="btn ghost" id="btn-restart">Start på nytt</button>
@@ -156,192 +150,10 @@ footer a{color:var(--muted)}
   </footer>
 </div>
 </div>
+
 <script>
-console.log("Matrise v2 script loaded");
-try {
 // ========== MATRISE v2 — SINNSMASKINERIET & OPPVÅKNINGSMODELLEN ==========
 
-const questions = [
-  {
-    id:1, level:1,
-    levelName:"Nivå 1: Avdekke sløret og egoet",
-    text:"Hvilken historie om livet mitt behandler jeg som en absolutt virkelighet, når den egentlig bare er et mentalt skript jeg har arvet eller konstruert?",
-    options:[
-      {letter:"A", text:"Jeg må klare alt alene, for ingen andre kommer til å hjelpe meg.", points:1},
-      {letter:"B", text:"Mine grenser eksisterer ikke; det som er mitt, tilhører også andre.", points:1},
-      {letter:"C", text:"Jeg er en person som ikke mestrer motgang eller store endringer.", points:2},
-      {letter:"D", text:"Jeg må alltid være den snille og tilpasse meg for å bli akseptert.", points:4},
-      {letter:"E", text:"Slik livet mitt er nå, er forhåndsbestemt – jeg har ingen reell påvirkning.", points:5}
-    ]
-  },
-  {
-    id:2, level:1,
-    levelName:"Nivå 1: Avdekke sløret og egoet",
-    text:"Hvilke daglige rutiner og vaner fungerer som min «blå pille» – ved å bedøve meg akkurat nok til at jeg ikke kjenner på uroen om at noe er galt?",
-    options:[
-      {letter:"A", text:"Konstant scrolling på telefonen, sosiale medier eller TV-titting.", points:1},
-      {letter:"B", text:"Overarbeid, konstant overskudd av oppgaver og hektisk timeplan.", points:1},
-      {letter:"C", text:"Å alltid sette andres behov foran mine egne for å slippe å kjenne på meg selv.", points:2},
-      {letter:"D", text:"Bruk og overforbruk av mat, sukker, nikotin eller alkohol for å dempe ubehag.", points:4},
-      {letter:"E", text:"Å unngå alenetid og alltid ha bakgrunnsstøy på (podkaster, musikk, støy).", points:5}
-    ]
-  },
-  {
-    id:3, level:1,
-    levelName:"Nivå 1: Avdekke sløret og egoet",
-    text:"Hvis alle sanseinntrykk, sosiale roller og tidligere erfaringer ble skrellet vekk akkurat nå, hva står da igjen som den kjerneobservatøren jeg er?",
-    options:[
-      {letter:"A", text:"En følelse av tomhet eller usikkerhet fordi jeg er vant til å definere meg ut fra roller.", points:1},
-      {letter:"B", text:"En uro og lengsel etter trygghet og tilknytning.", points:1},
-      {letter:"C", text:"En rolig, nøytral tilstedeværelse som bare observerer uten å dømme.", points:3},
-      {letter:"D", text:"Et uutforsket potensial som ikke lenger er bundet av fortidens historier.", points:4},
-      {letter:"E", text:"En dyp indre gnist, frihet og nysgjerrighet på hvem jeg egentlig er.", points:5}
-    ]
-  },
-  {
-    id:4, level:2,
-    levelName:"Nivå 2: Konfrontere forsvarsmekanismene",
-    text:"Hva er min indre «Agent Smith» – den spesifikke indre kritikeren eller fryktresponsen som angriper med én gang jeg prøver å gå utenfor komfortsonen?",
-    options:[
-      {letter:"A", text:"Tvileren – «Hvem tror du at du er som prøver på dette?»", points:1},
-      {letter:"B", text:"Unngåeren – «Dette er for vanskelig, det er tryggere å la det være.»", points:1},
-      {letter:"C", text:"Katastrofetenkeren – «Noe alvorlig galt kommer til å skje hvis du prøver.»", points:2},
-      {letter:"D", text:"Pleieren/Tilpasseren – «Dette vil gjøre andre ukomfortable eller sinte.»", points:4},
-      {letter:"E", text:"Perfeksjonisten – «Hvis det ikke blir helt perfekt, bør du la være.»", points:5}
-    ]
-  },
-  {
-    id:5, level:2,
-    levelName:"Nivå 2: Konfrontere forsvarsmekanismene",
-    text:"Hvor velger jeg stivbeint kontroll fremfor reell vekst fordi jeg er livredd for hva min ubearbeidede underbevissthet kan avsløre?",
-    options:[
-      {letter:"A", text:"I hverdagens struktur – ved å ha et rigid og ufleksibelt oppsett på ting.", points:1},
-      {letter:"B", text:"I relasjonene mine – ved å kontrollere andres atferd eller forventninger.", points:1},
-      {letter:"C", text:"I egen kropp – ved å spenne meg eller unngå å kjenne på kroppslige fornemmelser.", points:3},
-      {letter:"D", text:"I følelseslivet – ved å undertrykke «vanskelige» følelser som sinne eller sorg.", points:4},
-      {letter:"E", text:"I framtidsplaner – ved å nekte å ta sjanser uten 100% garantier.", points:5}
-    ]
-  },
-  {
-    id:6, level:2,
-    levelName:"Nivå 2: Konfrontere forsvarsmekanismene",
-    text:"Hvordan drar egoet mitt nytte av å holde meg fanget i de nåværende begrensningene mine?",
-    options:[
-      {letter:"A", text:"Det beskytter meg mot risikoen for å mislykkes eller bli avvist.", points:1},
-      {letter:"B", text:"Det gir meg en kjent identitet (f.eks. «offeret» eller «den som alltid sliter»).", points:1},
-      {letter:"C", text:"Det holder meg i en sone hvor forutsigbarhet trumfer usikker vekst.", points:2},
-      {letter:"D", text:"Det gjør at jeg slipper å ta det fulle ansvaret for mitt eget liv.", points:4},
-      {letter:"E", text:"Det sikrer at jeg beholder sympati eller oppmerksomhet fra mine nærmeste.", points:5}
-    ]
-  },
-  {
-    id:7, level:3,
-    levelName:"Nivå 3: Tilgang til underbevisst visdom",
-    text:"Hvilken sannhet prøver intuisjonen min (Morpheus) å fortelle meg, som det analytiske sinnet mitt (Arkitekten) hele tiden prøver å bortforklare?",
-    options:[
-      {letter:"A", text:"«Du må sette tydeligere grenser, selv om det skaper ubehag.»", points:1},
-      {letter:"B", text:"«En bestemt relasjon eller situasjon i livet ditt er ikke lenger bra for deg.»", points:1},
-      {letter:"C", text:"«Du trenger mer hvile og rom for deg selv enn du tillater deg.»", points:3},
-      {letter:"D", text:"«Du vet allerede svaret, du leter bare etter tillatelse fra andre.»", points:4},
-      {letter:"E", text:"«Du er klar for en større endring enn du våger å innrømme.»", points:5}
-    ]
-  },
-  {
-    id:8, level:3,
-    levelName:"Nivå 3: Tilgang til underbevisst visdom",
-    text:"Hvilket ubehagelig kjernespor gjemmer underbevisstheten min for meg fordi jeg ennå ikke er klar til å høre det?",
-    options:[
-      {letter:"A", text:"At jeg bryr meg mer om hva andre mener enn hva som er riktig for meg.", points:1},
-      {letter:"B", text:"At jeg selv opprettholder enkelte av mønstrene jeg klager over.", points:1},
-      {letter:"C", text:"At en dypere sorg eller gammelt uforløst traume krever oppmerksomhet.", points:3},
-      {letter:"D", text:"At jeg frykter suksess og synlighet like mye som jeg frykter nederlag.", points:4},
-      {letter:"E", text:"At jeg må gi slipp på kontrollen for å oppleve ekte trygghet.", points:5}
-    ]
-  },
-  {
-    id:9, level:3,
-    levelName:"Nivå 3: Tilgang til underbevisst visdom",
-    text:"Søker jeg ekte frihet, eller er jeg som Cypher – bare på jakt etter en mer behagelig, vattert celle inne i simuleringen?",
-    options:[
-      {letter:"A", text:"Jeg velger ofte komfort og det kjente, selv om det begrenser meg.", points:1},
-      {letter:"B", text:"Jeg ønsker frihet i teorien, men i praksis unngår jeg ubehaget det krever.", points:1},
-      {letter:"C", text:"Jeg søker frihet, men trekkes mot det behagelige når det blir for krevende.", points:3},
-      {letter:"D", text:"Jeg er i ferd med å ta aktive valg som fører til reell frigjøring.", points:4},
-      {letter:"E", text:"Jeg er klar til å møte ubehaget som trengs for å leve helt autentisk.", points:5}
-    ]
-  },
-  {
-    id:10, level:4,
-    levelName:"Nivå 4: Bøye reglene og skrive om koden",
-    text:"Hvilken begrenset overbevisning behandler jeg som en naturlov, når den egentlig bare er en kodelinje jeg kan skrive om?",
-    options:[
-      {letter:"A", text:"«Gammel vane kan ikke endres – jeg er bare slik jeg er.»", points:1},
-      {letter:"B", text:"«Følelser er farlige og må undertrykkes.»", points:1},
-      {letter:"C", text:"«Jeg må fortjene min egen verdi gjennom prestasjoner.»", points:3},
-      {letter:"D", text:"«Andre folks reaksjoner er mitt direkte ansvar.»", points:4},
-      {letter:"E", text:"«Det er urealistisk for meg å oppnå det jeg egentlig ønsker.»", points:5}
-    ]
-  },
-  {
-    id:11, level:4,
-    levelName:"Nivå 4: Bøye reglene og skrive om koden",
-    text:"Hvordan er min nåværende oppfatning av «kjærlighet» eller «overbevisning» enten med på å frigjøre bevisstheten min eller forankre meg dypere i illusjonen?",
-    options:[
-      {letter:"A", text:"Kjærlighet betyr å utviske egne grenser / «mitt er ditt» (forankrer meg).", points:1},
-      {letter:"B", text:"Jeg forveksler pleasing og avhengighet med ekte kjærlighet (forankrer meg).", points:1},
-      {letter:"C", text:"Overbevisningen min om å holde ut for enhver pris holder meg fast (forankrer meg).", points:3},
-      {letter:"D", text:"Kjærlighet er rommet hvor jeg kan være helt ærlig uten frykt (frigjør meg).", points:4},
-      {letter:"E", text:"Min voksende egenkjærlighet gir meg mot til å ta tøffe valg (frigjør meg).", points:5}
-    ]
-  },
-  {
-    id:12, level:4,
-    levelName:"Nivå 4: Bøye reglene og skrive om koden",
-    text:"Hvis jeg virkelig aksepterte at enhver hindring i det ytre miljøet er en direkte projeksjon av mitt eget sinnsmaskineri, hva er det første jeg ville valgt å endre på innsiden?",
-    options:[
-      {letter:"A", text:"Slutte å gi næring til den indre selvkritikeren min.", points:1},
-      {letter:"B", text:"Endre narrativet fra «jeg er et offer for omstendighetene» til «jeg har et valg».", points:1},
-      {letter:"C", text:"Erstatte frykt og kontroll med tillit og bevisst tilstedeværelse.", points:3},
-      {letter:"D", text:"Slutte å overføre egne forventninger og frustrasjoner over på andre.", points:4},
-      {letter:"E", text:"Begynne å respektere og håndheve mine egne personlige grenser.", points:5}
-    ]
-  }
-];
-
-const profiles = {
-  "Sovende": {
-    name:"Sovende", range:"0–20%", demografi:"~60% av befolkningen",
-    status:"En del av simuleringen.",
-    subtitle:"Du sover. Zoo føles som hjemme.",
-    desc:"Fullstendig identifisert med egoet, arvede skript og samfunnets forventninger. Egne grenser oppleves ikke-eksisterende. Unnvikelsesmekanismene («blå piller») styrer hverdagen uten at du er klar over det selv."
-  },
-  "Urolig": {
-    name:"Urolig", range:"21–50%", demografi:"~25% av befolkningen",
-    status:"Svelget den røde pillen, men står i sjokket.",
-    subtitle:"Du våkner. Noe skurrer.",
-    desc:"Du har begynt å kjenne skurringen i matrisen og ser at de gamle mønstrene begrenser deg. Frykt og den indre kritikeren kjemper imot hver gang du prøver å gå utenfor komfortsonen."
-  },
-  "Observerende": {
-    name:"Observerende", range:"51–80%", demografi:"~10% av befolkningen",
-    status:"Ser koden i veggene.",
-    subtitle:"Du ser. Du har zoomet ut.",
-    desc:"Klar over at tankene og følelsene er programmering snarere enn sannhet. Klarer i økende grad å skille mellom din egen indre observatør og de ytre forventningene. Grenser settes bevisst."
-  },
-  "Omkodende": {
-    name:"Omkodende", range:"81–98%", demografi:"~4% av befolkningen",
-    status:"Bøyer reglene i simuleringen.",
-    subtitle:"Du river. Gamle programmer slettes.",
-    desc:"Mønsterstyring og automatiserte vaner er i stor grad brutt. Du forstår at ytre motgang er projeksjoner fra eget sinnsmaskineri, og tar aktivt eierskap til å skrive om egne overbevisninger."
-  },
-  "Opplyst": {
-    name:"Opplyst", range:"99–100%", demografi:"~1% av befolkningen",
-    status:"Fri fra matrisen. «The One».",
-    subtitle:"Du er våken. Jungelen er hjemme.",
-    desc:"Fullstendig frigjort fra illusjonen om at du er bundet av fortid, arv eller andres skript. Opererer ut fra ren tilstedeværelse, ubegrenset skaperkraft og dyp indre autoritet."
-  }
-};
-
-// ========== MATRISE v2 — SINNSMASKINERIET & OPPVÅKNINGSMODELLEN ==========
 const questions = [
   {
     id:1, level:1,
@@ -543,33 +355,22 @@ const sectionLabel=document.getElementById("section-label");
 const progressText=document.getElementById("progress-text");
 const progressFill=document.getElementById("progress-fill");
 const questionText=document.getElementById("question-text");
-const optionsContainer=document.getElementById("likert-bar");
+const likertBar=document.getElementById("likert-bar");
 const btnBack=document.getElementById("btn-back");
-const resultTitle=document.getElementById("result-title");
+const resultName=document.getElementById("result-name");
 const resultSubtitle=document.getElementById("result-subtitle");
 const resultDesc=document.getElementById("result-desc");
-const resultPercent=document.getElementById("result-percent");
-const resultDemografi=document.getElementById("result-demografi");
-const resultStatus=document.getElementById("result-status");
-const resultRange=document.getElementById("result-range");
-const shareBtn=document.getElementById("btn-share");
 
-// ========== TRANSITIONS ==========
 function transition(from,to){
-  console.log("transition:",from.id,"->",to.id);
   from.classList.add("fade-out");
   setTimeout(function(){
     from.classList.add("hidden");
     from.classList.remove("fade-out");
     to.classList.remove("hidden");
     to.classList.add("fade-in");
-    console.log("transition complete:",to.id,"visible");
     setTimeout(function(){to.classList.remove("fade-in")},600);
   },400);
 }
-
-// ========== START ==========
-let redirected=false;
 
 function startOpening(){
   stepOpening.classList.remove("hidden");
@@ -580,17 +381,20 @@ function startOpening(){
   stepResult.classList.add("hidden");
 }
 
-// Vipps return-handling — kjører ETTER at DOM er klar
-(function checkReturn(){
-  var params=new URLSearchParams(window.location.search);
-  var paid=params.get("paid");
-  if(paid==="1"){hasPaid=true;redirected=true;transition(stepOpening,stepPayment);setTimeout(function(){transition(stepPayment,stepQuiz);startQuiz()},600)}
-  else if(paid==="mid"){hasPaid=true;redirected=true;currentQuestion=6;transition(stepOpening,stepPayment);setTimeout(function(){transition(stepPayment,stepQuiz);startQuiz()},600)}
-})();
+function startQuiz(){
+  currentQuestion=0;
+  totalPoints=0;
+  answers=[];
+  currentLevel=questions[0].level;
+  sectionLabel.textContent=questions[0].levelName;
+  hasPaid=true;
+  stepQuiz.classList.remove("hidden");
+  stepQuiz.classList.add("fade-in");
+  setTimeout(function(){stepQuiz.classList.remove("fade-in")},600);
+  renderQuestion();
+}
 
-if(!redirected){startOpening()}
-
-document.getElementById("btn-start").addEventListener("click",function(){console.log("btn-start clicked!");transition(stepOpening,stepPayment)});
+document.getElementById("btn-start").addEventListener("click",function(){transition(stepOpening,stepPayment)});
 
 // ========== VIPPS ==========
 function vippsPay(mode){
@@ -604,59 +408,42 @@ function vippsPay(mode){
 document.getElementById("btn-vipps").addEventListener("click",function(){vippsPay("full")});
 document.getElementById("btn-skip").addEventListener("click",function(){hasPaid=true;transition(stepPayment,stepQuiz);startQuiz()});
 document.getElementById("btn-paywall-vipps").addEventListener("click",function(){vippsPay("mid")});
-document.getElementById("btn-paywall-back").addEventListener("click",function(){transition(stepPaywall,stepQuiz);if(answers.length>0){var last=answers.pop();totalPoints-=last.points;currentQuestion--}renderQuestion()});
+document.getElementById("btn-paywall-back").addEventListener("click",function(){
+  transition(stepPaywall,stepQuiz);
+  if(answers.length>0){var last=answers.pop();totalPoints-=last.points;currentQuestion--}
+  renderQuestion();
+});
 
 // ========== QUIZ ==========
-function startQuiz(){
-  currentQuestion=0;
-  totalPoints=0;
-  answers=[];
-  currentLevel=1;
-  sectionLabel.textContent=questions[0].levelName;
-  renderQuestion();
-}
-
 function renderQuestion(){
-  if(currentQuestion>=questions.length){
-    btnBack.style.display="none";
-    transition(stepQuiz,stepLoading);
-    setTimeout(showResult,2200);
-    return;
-  }
-  if(currentQuestion===6&&!hasPaid){
-    transition(stepQuiz,stepPaywall);
-    return;
-  }
-
+  if(currentQuestion>=questions.length){btnBack.style.display="none";transition(stepQuiz,stepLoading);setTimeout(showResult,2200);return}
+  if(currentQuestion===6&&!hasPaid){transition(stepQuiz,stepPaywall);return}
   var q=questions[currentQuestion];
-
-  // Check for level transition
-  if(q.level!==currentLevel){
-    currentLevel=q.level;
-    sectionLabel.textContent=q.levelName;
-    sectionLabel.style.opacity="1";
-    // Brief flash effect
-    sectionLabel.style.color="#e74c3c";
-    setTimeout(function(){sectionLabel.style.color=""},1200);
-  }
-
+  if(q.level!==currentLevel){currentLevel=q.level;sectionLabel.textContent=q.levelName;sectionLabel.style.opacity="1"}
   progressText.textContent="Sp\u00f8rsm\u00e5l "+(currentQuestion+1)+" av "+(hasPaid?12:6);
   progressFill.style.width=((currentQuestion/(hasPaid?12:6))*100)+"%";
   questionText.textContent=q.text;
 
-  optionsContainer.innerHTML="";
-  for(var i=0;i<q.options.length;i++){
+  var currentAnswer=null;
+  for(var i=0;i<answers.length;i++){if(answers[i].questionId===q.id){currentAnswer=answers[i].letter;break}}
+
+  likertBar.innerHTML="";
+  var labelsEl=document.querySelector(".likert-labels");
+  if(labelsEl)labelsEl.style.display="none";
+  
+  for(var v=0;v<q.options.length;v++){
     (function(opt){
       var btn=document.createElement("button");
       btn.className="opt-btn";
       btn.style.textAlign="left";
-      btn.style.padding="0.9rem 1rem";
-      btn.style.fontSize="0.9rem";
-      btn.style.lineHeight="1.5";
-      btn.innerHTML='<span style="color:var(--accent);font-weight:bold;margin-right:10px">'+opt.letter+'</span>'+opt.text;
+      btn.style.padding="0.8rem 1rem";
+      btn.style.fontSize="0.85rem";
+      btn.style.lineHeight="1.45";
+      btn.innerHTML='<span style="color:var(--accent);font-weight:bold;margin-right:8px;flex-shrink:0">'+opt.letter+'</span>'+opt.text;
+      if(currentAnswer===opt.letter)btn.classList.add("selected");
       btn.addEventListener("click",function(){selectAnswer(opt)});
-      optionsContainer.appendChild(btn);
-    })(q.options[i]);
+      likertBar.appendChild(btn);
+    })(q.options[v])
   }
 
   if(currentQuestion===0){btnBack.style.display="none"}else{btnBack.style.display="block"}
@@ -664,37 +451,17 @@ function renderQuestion(){
 
 function selectAnswer(opt){
   var q=questions[currentQuestion];
-
-  // Remove previous answer for this question
   var oldIdx=-1;
-  for(var i=0;i<answers.length;i++){
-    if(answers[i].questionId===q.id){oldIdx=i;break}
-  }
-  if(oldIdx>=0){
-    totalPoints-=answers[oldIdx].points;
-    answers.splice(oldIdx,1);
-  }
-
-  // Add new answer
+  for(var i=0;i<answers.length;i++){if(answers[i].questionId===q.id){oldIdx=i;break}}
+  if(oldIdx>=0){totalPoints-=answers[oldIdx].points;answers.splice(oldIdx,1)}
   answers.push({questionId:q.id,points:opt.points,letter:opt.letter,level:q.level});
   totalPoints+=opt.points;
 
-  // Highlight selected
-  var btns=optionsContainer.querySelectorAll(".opt-btn");
+  var btns=likertBar.querySelectorAll(".opt-btn");
   btns.forEach(function(b){b.classList.remove("selected")});
-  // Find the button that was clicked and highlight it
-  // Actually we'll just add selected class to all that match
-  for(var i=0;i<btns.length;i++){
-    if(btns[i].textContent.indexOf(opt.letter)===0||btns[i].textContent.indexOf(" "+opt.letter)===1){
-      btns[i].classList.add("selected");
-    }
-  }
+  for(var i=0;i<btns.length;i++){if(btns[i].textContent.trim().indexOf(opt.letter)===0)btns[i].classList.add("selected")}
 
-  // Advance
-  setTimeout(function(){
-    currentQuestion++;
-    renderQuestion();
-  },500);
+  setTimeout(function(){currentQuestion++;renderQuestion()},450)
 }
 
 document.getElementById("btn-back").addEventListener("click",function(){
@@ -702,9 +469,6 @@ document.getElementById("btn-back").addEventListener("click",function(){
   var last=answers.pop();
   totalPoints-=last.points;
   currentQuestion--;
-  if(currentQuestion>0){
-    currentLevel=questions[currentQuestion-1].level;
-  }
   renderQuestion();
 });
 
@@ -719,42 +483,48 @@ function getProfile(pct){
 
 function calcLevelScores(){
   var levels={1:0,2:0,3:0,4:0};
-  for(var i=0;i<answers.length;i++){
-    var a=answers[i];
-    levels[a.level]=(levels[a.level]||0)+a.points;
-  }
-  // Each level has 3 questions, max 15 points
-  return {
-    l1:Math.round((levels[1]/15)*100),
-    l2:Math.round((levels[2]/15)*100),
-    l3:Math.round((levels[3]/15)*100),
-    l4:Math.round((levels[4]/15)*100)
-  };
+  for(var i=0;i<answers.length;i++){levels[answers[i].level]=(levels[answers[i].level]||0)+answers[i].points}
+  return {l1:Math.round((levels[1]/15)*100),l2:Math.round((levels[2]/15)*100),l3:Math.round((levels[3]/15)*100),l4:Math.round((levels[4]/15)*100)};
 }
 
 function showResult(){
   var pct=Math.round(((totalPoints-12)/48)*100);
   if(pct<0)pct=0;
   if(pct>100)pct=100;
-
   var profile=getProfile(pct);
   var ls=calcLevelScores();
 
-  resultTitle.textContent=profile.name;
+  resultName.textContent=profile.name;
   resultSubtitle.textContent=profile.subtitle;
   resultDesc.textContent=profile.desc;
-  resultPercent.textContent=pct+"%";
-  resultDemografi.textContent=profile.demografi;
-  resultStatus.textContent=profile.status;
-  resultRange.textContent=profile.range;
 
-  // Radar chart
-  var ctx=document.getElementById("radarChart").getContext("2d");
+  var pe=document.getElementById("result-percent");
+  var re=document.getElementById("result-range");
+  var de=document.getElementById("result-demografi");
+  var se=document.getElementById("result-status");
+  if(pe)pe.textContent=pct+"%";
+  if(re)re.textContent=profile.range;
+  if(de)de.textContent=profile.demografi;
+  if(se)se.textContent=profile.status;
+
+  transition(stepLoading,stepResult);
+  setTimeout(drawChart,300);
+}
+
+function drawChart(){
   if(chartInstance){chartInstance.destroy()}
+  var pct=Math.round(((totalPoints-12)/48)*100);
+  if(pct<0)pct=0;
+  if(pct>100)pct=100;
+  var ls=calcLevelScores();
+  var ctx=document.getElementById("radar-chart");
+  if(!ctx)ctx=document.getElementById("radarChart");
+  ctx=ctx.getContext("2d");
+
   chartInstance=new Chart(ctx,{
     type:"radar",
     data:{
-      labels:["Niv\u00e5 1: Sl\u00f8ret","Niv\u00e5 2: Forsvaret","Niv\u00e5 3: Visdommen","Niv\u00e5 4: Omkodingen","Total oppv\u00e5kning"],
+      labels:["Niv\u00e5 1: Sl\u00f8ret","Niv\u00e5 2: Forsvaret","Niv\u00e5 3: Visdommen","Niv\u00e5 4: Omkodingen","Total"],
       datasets:[{
         label:"Din profil",
         data:[ls.l1,ls.l2,ls.l3,ls.l4,pct],
@@ -770,49 +540,38 @@ function showResult(){
     options:{
       responsive:true,
       maintainAspectRatio:true,
-      scales:{
-        r:{
-          beginAtZero:true,
-          max:100,
-          ticks:{stepSize:20,color:"#6b6660",backdropColor:"transparent",font:{size:9}},
-          grid:{color:"rgba(255,255,255,0.06)"},
-          angleLines:{color:"rgba(255,255,255,0.08)"},
-          pointLabels:{color:"#e0ddd6",font:{size:10,family:"Georgia,serif"}}
-        }
-      },
-      plugins:{
-        legend:{display:false}
-      }
+      scales:{r:{beginAtZero:true,max:100,ticks:{stepSize:20,color:"#6b6660",backdropColor:"transparent",font:{size:9}},grid:{color:"rgba(255,255,255,0.06)"},angleLines:{color:"rgba(255,255,255,0.08)"},pointLabels:{color:"#e0ddd6",font:{size:9,family:"Georgia,serif"}}}},
+      plugins:{legend:{display:false}}
     }
   });
-
-  transition(stepLoading,stepResult);
 }
 
 // ========== SHARE ==========
+var shareBtn=document.getElementById("btn-share");
 shareBtn.addEventListener("click",function(){
   var pct=Math.round(((totalPoints-12)/48)*100);
   if(pct<0)pct=0;
   if(pct>100)pct=100;
   var profile=getProfile(pct);
-  var text="Jeg er "+profile.name+" ("+pct+"% oppv\u00e5kning). Hvor er du? matrise.enkelliv.no";
-  if(navigator.share){
-    navigator.share({title:"Matrise-testen",text:text,url:"https://matrise.enkelliv.no"});
-  }else{
-    navigator.clipboard.writeText(text+" https://matrise.enkelliv.no").then(function(){alert("Kopiert!")});
-  }
+  var nm=profile.name;
+  var sub=profile.subtitle;
+  var title=nm+" ("+pct+"%) — Matrise-testen";
+  var text=nm+": "+sub;
+  var url="https://matrise.enkelliv.no";
+  if(navigator.share){navigator.share({title:title,text:text,url:url}).catch(function(){});return}
+  var full=title+"\n\n"+text+"\n"+url;
+  navigator.clipboard.writeText(full).then(function(){alert("Kopiert til utklippstavlen!")}).catch(function(){prompt("Kopier:",full)});
 });
 
-document.getElementById("btn-restart").addEventListener("click",function(){
-  totalPoints=0;
-  answers=[];
-  currentQuestion=0;
-  hasPaid=false;
-  currentLevel=1;
-  stepResult.classList.add("hidden");
-  stepPayment.classList.remove("hidden");
-});
-
+// ========== INIT ==========
+function handleReturnFromVipps(){
+  var params=new URLSearchParams(window.location.search);
+  var paid=params.get("paid");
+  if(paid==="1"){hasPaid=true;setTimeout(function(){startQuiz()},300)}
+  else if(paid==="mid"){hasPaid=true;currentQuestion=6;setTimeout(function(){startQuiz()},300)}
+}
+handleReturnFromVipps();
+if(!hasPaid){startOpening()}
 </script>
 </body>
 </html>
