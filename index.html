@@ -1,645 +1,645 @@
-<!DOCTYPE html>
-<html lang="nb">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Matrise-testen</title>
-<meta name="description" content="Matrise-testen — To kapitler. Ett speil. Våknopp + Matrise.">
-<meta property="og:title" content="Matrise-testen">
-<meta property="og:description" content="Våknopp + Matrise. 24 spørsmål. Din arketype. Din profil. Ett speil.">
-<meta property="og:type" content="website">
-<meta property="og:locale" content="nb_NO">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><polygon points='50,5 95,95 5,95' fill='%23c0392b'/><text x='50' y='72' text-anchor='middle' fill='%230a0a0a' font-size='30' font-family='monospace' font-weight='bold'>M</text></svg>">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-<style>
-:root{--bg:#0a0a0a;--text:#e0ddd6;--muted:#6b6660;--accent:#c0392b;--accent-glow:#e74c3c;--surface:#141210;--border:#2a2520;--gold:#c9a84c;--gold-dim:#a68a3a;--night:#0a1128}
-*{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100%;min-height:100vh;background:var(--bg);color:var(--text);font-family:Georgia,'Times New Roman',serif;line-height:1.7;display:flex;align-items:center;justify-content:center;overflow-x:hidden}
-
-/* === SHARED === */
-#app{width:100%;max-width:600px;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem 1rem;position:relative}
-.step{width:100%;display:flex;flex-direction:column;align-items:center;text-align:center;gap:1.5rem;transition:opacity .6s ease,transform .6s ease}
-.step.hidden{display:none}
-.step.fade-out{opacity:0;transform:translateY(-20px);pointer-events:none}
-.step.fade-in{animation:fadeSlideIn .6s ease forwards}
-@keyframes fadeSlideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-.btn{display:inline-block;padding:.85rem 2.2rem;border:2px solid var(--accent);background:transparent;color:var(--accent);font-family:Georgia,serif;font-size:1rem;cursor:pointer;border-radius:3px;letter-spacing:.5px;transition:all .3s ease;min-width:180px;text-align:center}
-.btn:hover{background:var(--accent);color:var(--bg)}
-.btn.small{padding:.5rem 1.2rem;font-size:.8rem;min-width:unset}
-.btn.ghost{border:1px solid rgba(192,57,43,.35);color:rgba(224,221,214,.5);font-size:.75rem;min-width:unset}
-.btn.ghost:hover{border-color:var(--accent);color:var(--accent);background:transparent}
-h1{font-size:1.5rem;font-weight:400;margin-bottom:.5rem}
-h2{font-size:1.1rem;font-weight:400;margin-bottom:.5rem}
-h3{font-size:.85rem;font-weight:400;text-transform:uppercase;letter-spacing:3px;margin-bottom:.3rem}
-
-/* === LANDING === */
-.landing-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;width:100%;max-width:500px;margin-bottom:.3rem}
-.landing-card{background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:1.3rem 1rem;text-align:center}
-.landing-card.vaknopp{border-color:rgba(201,168,76,0.4)}
-.landing-card.matrise{border-color:rgba(192,57,43,0.4)}
-.landing-card h3{font-size:.95rem;margin-bottom:.5rem;letter-spacing:1px;text-transform:none}
-.landing-card.vaknopp h3{color:var(--gold)}
-.landing-card.matrise h3{color:var(--accent)}
-.landing-card .card-subtitle{font-size:.68rem;color:var(--muted);font-style:italic;margin-bottom:.7rem;line-height:1.4}
-.landing-card ul{list-style:none;text-align:left;font-size:.7rem;color:var(--muted);line-height:1.7}
-.landing-card ul li::before{content:"\2014 ";opacity:.4}
-.landing-arrow{font-size:1.2rem;color:var(--muted);margin:.3rem 0}
-.landing-result-label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:3px;margin-top:.5rem}
-@media(max-width:420px){.landing-grid{grid-template-columns:1fr;gap:1rem}}
-
-/* === QUIZ === */
-.section-badge{font-size:.7rem;color:var(--gold);text-transform:uppercase;letter-spacing:2px;padding:.3rem 1rem;border:1px solid rgba(201,168,76,0.3);border-radius:20px;margin-bottom:.3rem}
-.section-badge.matrise-badge{color:var(--accent);border-color:rgba(192,57,43,0.3)}
-.progress-bar-wrap{width:100%;max-width:400px;height:2px;background:var(--border);border-radius:1px;margin-bottom:.3rem}
-.progress-bar-fill{height:100%;background:var(--accent);border-radius:1px;transition:width .3s ease}
-.progress-text{font-size:.7rem;color:var(--muted);letter-spacing:1px}
-.question-text{font-size:1.15rem;line-height:1.6;max-width:480px;margin-bottom:.3rem}
-.options{width:100%;max-width:460px;display:flex;flex-direction:column;gap:.4rem;margin-top:.3rem}
-.opt-btn{width:100%;padding:.7rem 1rem;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:.85rem;cursor:pointer;border-radius:3px;text-align:center;transition:all .2s ease;font-family:Georgia,serif}
-.opt-btn:hover{border-color:var(--accent);background:#1a1512}
-.opt-btn.selected{border-color:var(--accent);background:rgba(192,57,43,.12);color:var(--accent-glow)}
-
-/* === PAYWALL / PAYMENT === */
-.paywall-card{background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:1.8rem 1.5rem;text-align:center;max-width:380px;width:100%}
-.price{font-size:2.2rem;color:var(--accent);margin:.8rem 0;letter-spacing:1px}
-
-/* === LOADING === */
-.loading-dots{display:flex;gap:.5rem;justify-content:center}
-.loading-dots span{width:8px;height:8px;background:var(--accent);border-radius:50%;animation:bounce 1.4s infinite ease-in-out}
-.loading-dots span:nth-child(2){animation-delay:.16s}
-.loading-dots span:nth-child(3){animation-delay:.32s}
-@keyframes bounce{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
-
-/* === SERTIFIKAT === */
-#certificate{width:100%;max-width:480px;background:linear-gradient(170deg,#0d0c0a 0%,#141210 40%,#0a0a0a 100%);border:3px solid rgba(192,57,43,0.5);border-radius:4px;padding:1.8rem 1.2rem 1.5rem;position:relative;overflow:hidden;text-align:center;box-shadow:0 0 60px rgba(192,57,43,0.12),inset 0 0 80px rgba(0,0,0,0.5)}
-#certificate::before{content:'';position:absolute;top:6px;left:6px;right:6px;bottom:6px;border:1px solid rgba(192,57,43,0.2);border-radius:3px;pointer-events:none}
-.cert-seal{display:inline-block;width:0;height:0;border-left:20px solid transparent;border-right:20px solid transparent;border-bottom:34px solid var(--accent);margin-bottom:.6rem;opacity:.9}
-.cert-title{font-size:.85rem;color:var(--muted);text-transform:uppercase;letter-spacing:5px;margin-bottom:.1rem}
-.cert-headline{font-size:1.7rem;color:var(--accent);letter-spacing:2px;font-weight:400;margin-bottom:.2rem}
-.cert-subtitle{font-size:.8rem;color:var(--muted);font-style:italic;margin-bottom:.8rem}
-.cert-divider{width:50px;height:1px;background:var(--accent);margin:.8rem auto;opacity:.5}
-
-/* === TRIANGLE DUAL RESULT === */
-.triangle-wrap{position:relative;width:100%;max-width:360px;height:240px;margin:0 auto .8rem}
-.triangle-svg{position:absolute;top:0;left:0;width:100%;height:100%}
-.triangle-inner{position:absolute;top:0;left:0;width:100%;height:100%;display:flex}
-.t-half{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:.5rem}
-.t-half-left{padding-right:1rem;padding-top:2.5rem}
-.t-half-right{padding-left:1rem;padding-top:2.5rem}
-.t-label{font-size:.55rem;text-transform:uppercase;letter-spacing:2.5px;margin-bottom:.3rem}
-.t-half-left .t-label{color:var(--gold)}
-.t-half-right .t-label{color:var(--accent)}
-.t-name{font-size:1rem;letter-spacing:.5px;margin-bottom:.05rem;line-height:1.2}
-.t-half-left .t-name{color:var(--gold)}
-.t-half-right .t-name{color:var(--accent-glow)}
-.t-sub{font-size:.65rem;color:var(--muted);font-style:italic;line-height:1.25;max-width:130px}
-@media(max-width:400px){.triangle-wrap{height:210px}.t-name{font-size:.85rem}.t-sub{font-size:.6rem}}
-
-/* === SPEKTRUM === */
-.spectrum-wrap{max-width:380px;margin:0 auto .8rem}
-.spectrum-labels{display:flex;justify-content:space-between;font-size:.55rem;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:.3rem;padding:0 2px}
-.spectrum-bar{position:relative;height:4px;background:linear-gradient(to right,#2a2520,#3a3020 30%,#5a4030 60%,#8a3020 85%,var(--accent));border-radius:2px;margin-bottom:.5rem}
-.spectrum-dot{position:absolute;top:50%;width:16px;height:16px;background:var(--accent-glow);border:2px solid #0a0a0a;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 12px rgba(231,76,60,0.5);z-index:2;transition:left .5s ease}
-.spectrum-score{font-size:.8rem;color:var(--text);margin-bottom:.05rem}
-.spectrum-score strong{font-size:1.2rem;color:var(--accent-glow);font-weight:400}
-.spectrum-position{font-size:.67rem;color:var(--muted);font-style:italic}
-.spectrum-population{font-size:.6rem;color:var(--muted);opacity:.6;letter-spacing:1px;margin-top:.15rem}
-
-/* === RADAR === */
-.chart-wrap{width:100%;max-width:280px;margin:0 auto .5rem}
-.chart-wrap canvas{width:100%!important;height:auto!important}
-
-/* === DESC === */
-.cert-description{font-size:.75rem;line-height:1.6;color:var(--muted);max-width:380px;margin:0 auto .8rem}
-.cert-footer{font-size:.6rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;opacity:.5;margin-bottom:.1rem}
-.cert-url{font-size:.65rem;color:var(--accent);opacity:.6;letter-spacing:1px}
-.cert-actions{display:flex;gap:.6rem;margin-top:.5rem;flex-wrap:wrap;justify-content:center}
-footer{font-size:.6rem;color:var(--muted);opacity:.5;margin-top:1rem;text-align:center}
-</style>
-</head>
-<body>
-<div id="app">
-
-<!-- ============ LANDING ============ -->
-<div class="step" id="step-landing">
-<h1>Matrise-testen</h1>
-<div class="landing-grid">
-<div class="landing-card vaknopp">
-<h3>Våknopp</h3>
-<div class="card-subtitle">Formelen som åpner din Pandoras eske</div>
-<ul>
-<li>Hvem er du — under overflaten?</li>
-<li>12 spørsmål ingen stiller deg</li>
-<li>5 arketyper</li>
-</ul>
-</div>
-<div class="landing-card matrise">
-<h3>Matrise</h3>
-<div class="card-subtitle">Poeng. Prosent. Profil.</div>
-<ul>
-<li>Hvor står du — i maskineriet?</li>
-<li>12 påstander, 4 nivåer</li>
-<li>5 profiler</li>
-</ul>
-</div>
-</div>
-<div class="landing-arrow">▼</div>
-<div class="landing-result-label">Resultat</div>
-<p style="font-size:.8rem;color:var(--muted);max-width:400px">Ett sertifikat. Din arketype + din profil.<br>Spektrumlinje + radar. Last ned. Del.</p>
-<button class="btn" id="btn-start" style="margin-top:.3rem">Start testen</button>
-<footer>24 spørsmål · ~10 minutter · Gratis i lanseringsfasen</footer>
-</div>
-
-<!-- ============ PAYMENT ============ -->
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matrise-testen</title>
+<meta name="description" content="Matrise-testen â€” To kapitler. Ett speil. VÃ¥knopp + Matrise.">
+<meta property="og:title" content="Matrise-testen">
+<meta property="og:description" content="VÃ¥knopp + Matrise. 24 spÃ¸rsmÃ¥l. Din arketype. Din profil. Ett speil.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="nb_NO">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><polygon points='50,5 95,95 5,95' fill='%23c0392b'/><text x='50' y='72' text-anchor='middle' fill='%230a0a0a' font-size='30' font-family='monospace' font-weight='bold'>M</text></svg>">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<style>
+:root{--bg:#0a0a0a;--text:#e0ddd6;--muted:#6b6660;--accent:#c0392b;--accent-glow:#e74c3c;--surface:#141210;--border:#2a2520;--gold:#c9a84c;--gold-dim:#a68a3a;--night:#0a1128}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;min-height:100vh;background:var(--bg);color:var(--text);font-family:Georgia,'Times New Roman',serif;line-height:1.7;display:flex;align-items:center;justify-content:center;overflow-x:hidden}
+
+/* === SHARED === */
+#app{width:100%;max-width:600px;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem 1rem;position:relative}
+.step{width:100%;display:flex;flex-direction:column;align-items:center;text-align:center;gap:1.5rem;transition:opacity .6s ease,transform .6s ease}
+.step.hidden{display:none}
+.step.fade-out{opacity:0;transform:translateY(-20px);pointer-events:none}
+.step.fade-in{animation:fadeSlideIn .6s ease forwards}
+@keyframes fadeSlideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.btn{display:inline-block;padding:.85rem 2.2rem;border:2px solid var(--accent);background:transparent;color:var(--accent);font-family:Georgia,serif;font-size:1rem;cursor:pointer;border-radius:3px;letter-spacing:.5px;transition:all .3s ease;min-width:180px;text-align:center}
+.btn:hover{background:var(--accent);color:var(--bg)}
+.btn.small{padding:.5rem 1.2rem;font-size:.8rem;min-width:unset}
+.btn.ghost{border:1px solid rgba(192,57,43,.35);color:rgba(224,221,214,.5);font-size:.75rem;min-width:unset}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent);background:transparent}
+h1{font-size:1.5rem;font-weight:400;margin-bottom:.5rem}
+h2{font-size:1.1rem;font-weight:400;margin-bottom:.5rem}
+h3{font-size:.85rem;font-weight:400;text-transform:uppercase;letter-spacing:3px;margin-bottom:.3rem}
+
+/* === LANDING === */
+.landing-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;width:100%;max-width:500px;margin-bottom:.3rem}
+.landing-card{background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:1.3rem 1rem;text-align:center}
+.landing-card.vaknopp{border-color:rgba(201,168,76,0.4)}
+.landing-card.matrise{border-color:rgba(192,57,43,0.4)}
+.landing-card h3{font-size:.95rem;margin-bottom:.5rem;letter-spacing:1px;text-transform:none}
+.landing-card.vaknopp h3{color:var(--gold)}
+.landing-card.matrise h3{color:var(--accent)}
+.landing-card .card-subtitle{font-size:.68rem;color:var(--muted);font-style:italic;margin-bottom:.7rem;line-height:1.4}
+.landing-card ul{list-style:none;text-align:left;font-size:.7rem;color:var(--muted);line-height:1.7}
+.landing-card ul li::before{content:"\2014 ";opacity:.4}
+.landing-arrow{font-size:1.2rem;color:var(--muted);margin:.3rem 0}
+.landing-result-label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:3px;margin-top:.5rem}
+@media(max-width:420px){.landing-grid{grid-template-columns:1fr;gap:1rem}}
+
+/* === QUIZ === */
+.section-badge{font-size:.7rem;color:var(--gold);text-transform:uppercase;letter-spacing:2px;padding:.3rem 1rem;border:1px solid rgba(201,168,76,0.3);border-radius:20px;margin-bottom:.3rem}
+.section-badge.matrise-badge{color:var(--accent);border-color:rgba(192,57,43,0.3)}
+.progress-bar-wrap{width:100%;max-width:400px;height:2px;background:var(--border);border-radius:1px;margin-bottom:.3rem}
+.progress-bar-fill{height:100%;background:var(--accent);border-radius:1px;transition:width .3s ease}
+.progress-text{font-size:.7rem;color:var(--muted);letter-spacing:1px}
+.question-text{font-size:1.15rem;line-height:1.6;max-width:480px;margin-bottom:.3rem}
+.options{width:100%;max-width:460px;display:flex;flex-direction:column;gap:.4rem;margin-top:.3rem}
+.opt-btn{width:100%;padding:.7rem 1rem;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:.85rem;cursor:pointer;border-radius:3px;text-align:center;transition:all .2s ease;font-family:Georgia,serif}
+.opt-btn:hover{border-color:var(--accent);background:#1a1512}
+.opt-btn.selected{border-color:var(--accent);background:rgba(192,57,43,.12);color:var(--accent-glow)}
+
+/* === PAYWALL / PAYMENT === */
+.paywall-card{background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:1.8rem 1.5rem;text-align:center;max-width:380px;width:100%}
+.price{font-size:2.2rem;color:var(--accent);margin:.8rem 0;letter-spacing:1px}
+
+/* === LOADING === */
+.loading-dots{display:flex;gap:.5rem;justify-content:center}
+.loading-dots span{width:8px;height:8px;background:var(--accent);border-radius:50%;animation:bounce 1.4s infinite ease-in-out}
+.loading-dots span:nth-child(2){animation-delay:.16s}
+.loading-dots span:nth-child(3){animation-delay:.32s}
+@keyframes bounce{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
+
+/* === SERTIFIKAT === */
+#certificate{width:100%;max-width:480px;background:linear-gradient(170deg,#0d0c0a 0%,#141210 40%,#0a0a0a 100%);border:3px solid rgba(192,57,43,0.5);border-radius:4px;padding:1.8rem 1.2rem 1.5rem;position:relative;overflow:hidden;text-align:center;box-shadow:0 0 60px rgba(192,57,43,0.12),inset 0 0 80px rgba(0,0,0,0.5)}
+#certificate::before{content:'';position:absolute;top:6px;left:6px;right:6px;bottom:6px;border:1px solid rgba(192,57,43,0.2);border-radius:3px;pointer-events:none}
+.cert-seal{display:inline-block;width:0;height:0;border-left:20px solid transparent;border-right:20px solid transparent;border-bottom:34px solid var(--accent);margin-bottom:.6rem;opacity:.9}
+.cert-title{font-size:.85rem;color:var(--muted);text-transform:uppercase;letter-spacing:5px;margin-bottom:.1rem}
+.cert-headline{font-size:1.7rem;color:var(--accent);letter-spacing:2px;font-weight:400;margin-bottom:.2rem}
+.cert-subtitle{font-size:.8rem;color:var(--muted);font-style:italic;margin-bottom:.8rem}
+.cert-divider{width:50px;height:1px;background:var(--accent);margin:.8rem auto;opacity:.5}
+
+/* === TRIANGLE DUAL RESULT === */
+.triangle-wrap{position:relative;width:100%;max-width:360px;height:240px;margin:0 auto .8rem}
+.triangle-svg{position:absolute;top:0;left:0;width:100%;height:100%}
+.triangle-inner{position:absolute;top:0;left:0;width:100%;height:100%;display:flex}
+.t-half{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:.5rem}
+.t-half-left{padding-right:1rem;padding-top:2.5rem}
+.t-half-right{padding-left:1rem;padding-top:2.5rem}
+.t-label{font-size:.55rem;text-transform:uppercase;letter-spacing:2.5px;margin-bottom:.3rem}
+.t-half-left .t-label{color:var(--gold)}
+.t-half-right .t-label{color:var(--accent)}
+.t-name{font-size:1rem;letter-spacing:.5px;margin-bottom:.05rem;line-height:1.2}
+.t-half-left .t-name{color:var(--gold)}
+.t-half-right .t-name{color:var(--accent-glow)}
+.t-sub{font-size:.65rem;color:var(--muted);font-style:italic;line-height:1.25;max-width:130px}
+@media(max-width:400px){.triangle-wrap{height:210px}.t-name{font-size:.85rem}.t-sub{font-size:.6rem}}
+
+/* === SPEKTRUM === */
+.spectrum-wrap{max-width:380px;margin:0 auto .8rem}
+.spectrum-labels{display:flex;justify-content:space-between;font-size:.55rem;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:.3rem;padding:0 2px}
+.spectrum-bar{position:relative;height:4px;background:linear-gradient(to right,#2a2520,#3a3020 30%,#5a4030 60%,#8a3020 85%,var(--accent));border-radius:2px;margin-bottom:.5rem}
+.spectrum-dot{position:absolute;top:50%;width:16px;height:16px;background:var(--accent-glow);border:2px solid #0a0a0a;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 12px rgba(231,76,60,0.5);z-index:2;transition:left .5s ease}
+.spectrum-score{font-size:.8rem;color:var(--text);margin-bottom:.05rem}
+.spectrum-score strong{font-size:1.2rem;color:var(--accent-glow);font-weight:400}
+.spectrum-position{font-size:.67rem;color:var(--muted);font-style:italic}
+.spectrum-population{font-size:.6rem;color:var(--muted);opacity:.6;letter-spacing:1px;margin-top:.15rem}
+
+/* === RADAR === */
+.chart-wrap{width:100%;max-width:280px;margin:0 auto .5rem}
+.chart-wrap canvas{width:100%!important;height:auto!important}
+
+/* === DESC === */
+.cert-description{font-size:.75rem;line-height:1.6;color:var(--muted);max-width:380px;margin:0 auto .8rem}
+.cert-footer{font-size:.6rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;opacity:.5;margin-bottom:.1rem}
+.cert-url{font-size:.65rem;color:var(--accent);opacity:.6;letter-spacing:1px}
+.cert-actions{display:flex;gap:.6rem;margin-top:.5rem;flex-wrap:wrap;justify-content:center}
+footer{font-size:.6rem;color:var(--muted);opacity:.5;margin-top:1rem;text-align:center}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ============ LANDING ============ -->
+<div class="step" id="step-landing">
+<h1>Matrise-testen</h1>
+<div class="landing-grid">
+<div class="landing-card vaknopp">
+<h3>VÃ¥knopp</h3>
+<div class="card-subtitle">Formelen som Ã¥pner din Pandoras eske</div>
+<ul>
+<li>Hvem er du â€” under overflaten?</li>
+<li>12 spÃ¸rsmÃ¥l ingen stiller deg</li>
+<li>5 arketyper</li>
+</ul>
+</div>
+<div class="landing-card matrise">
+<h3>Matrise</h3>
+<div class="card-subtitle">Poeng. Prosent. Profil.</div>
+<ul>
+<li>Hvor stÃ¥r du â€” i maskineriet?</li>
+<li>12 pÃ¥stander, 4 nivÃ¥er</li>
+<li>5 profiler</li>
+</ul>
+</div>
+</div>
+<div class="landing-arrow">â–¼</div>
+<div class="landing-result-label">Resultat</div>
+<p style="font-size:.8rem;color:var(--muted);max-width:400px">Ett sertifikat. Din arketype + din profil.<br>Spektrumlinje + radar. Last ned. Del.</p>
+<button class="btn" id="btn-start" style="margin-top:.3rem">Start testen</button>
+<footer>24 spÃ¸rsmÃ¥l Â· ~10 minutter Â· Gratis i lanseringsfasen</footer>
+</div>
+
+<!-- ============ PAYMENT ============ -->
 <div class="step hidden" id="step-payment">
 <div class="paywall-card">
-<h2>Lås opp Matrise-testen</h2>
-<p style="font-size:.85rem;color:var(--muted);line-height:1.5">Våknopp + Matrise. To kapitler. Ett speil.</p>
-<p style="font-size:.7rem;color:var(--gold);margin-bottom:.4rem;font-style:italic">99 kr fra 1. september · Gratis i lanseringsfasen nå</p>
+<h2>LÃ¥s opp Matrise-testen</h2>
+<p style="font-size:.85rem;color:var(--muted);line-height:1.5">VÃ¥knopp + Matrise. To kapitler. Ett speil.</p>
+<p style="font-size:.7rem;color:var(--gold);margin-bottom:.4rem;font-style:italic">99 kr fra 1. september Â· Gratis i lanseringsfasen nÃ¥</p>
 <button class="btn" id="btn-skip" style="width:100%;margin-bottom:.7rem">Start testen gratis</button>
 <button class="btn ghost" id="btn-vipps">Betal med Vipps (kommer snart)</button>
 </div>
 </div>
 
 
-<!-- ============ VAKNOPP QUIZ ============ -->
-<div class="step hidden" id="step-quiz-vaknopp">
-<div class="section-badge" id="vaknopp-section">Våknopp</div>
-<div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-fill-vaknopp"></div></div>
-<p class="progress-text" id="progress-text-vaknopp"></p>
-<p class="question-text" id="question-text-vaknopp"></p>
-<div class="options" id="options-vaknopp"></div>
-</div>
-
-<!-- ============ TRANSITION ============ -->
-<div class="step hidden" id="step-transition">
-<h2 style="color:var(--gold)">Våknopp fullført</h2>
-<p style="font-size:.9rem;color:var(--muted);max-width:380px">Du har svart på spørsmålene ingen stiller. Nå venter maskineriet.</p>
-<div class="landing-card matrise" style="max-width:300px">
-<h3>Matrise</h3>
-<div class="card-subtitle">Poeng. Prosent. Profil.</div>
-<p style="font-size:.7rem;color:var(--muted)">12 påstander. 4 nivåer. Hvor fast sitter du i zoo?</p>
-</div>
-<button class="btn" id="btn-transition">Fortsett</button>
-</div>
-
-<!-- ============ MATRISE QUIZ ============ -->
-<div class="step hidden" id="step-quiz-matrise">
-<div class="section-badge matrise-badge" id="matrise-section">Matrise</div>
-<div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-fill-matrise"></div></div>
-<p class="progress-text" id="progress-text-matrise"></p>
-<p class="question-text" id="question-text-matrise"></p>
-<div class="options" id="options-matrise"></div>
-</div>
-
-<!-- ============ LOADING ============ -->
-<div class="step hidden" id="step-loading">
-<div class="loading-dots"><span></span><span></span><span></span></div>
-<p style="color:var(--muted);margin-top:1rem">Beregner profilen din...</p>
-</div>
-
-<!-- ============ RESULT ============ -->
-<div class="step hidden" id="step-result">
-<div id="certificate">
-<div class="cert-seal"></div>
-<div class="cert-title">Matrise-testen</div>
-<div class="cert-headline">Sertifikat</div>
-<div class="cert-subtitle">Våknopp + Matrise</div>
-<div class="cert-divider"></div>
-
-<div class="triangle-wrap">
-<svg class="triangle-svg" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid meet">
-  <polygon points="150,6 6,194 294,194" fill="none" stroke="rgba(192,57,43,0.45)" stroke-width="2"/>
-  <line x1="150" y1="40" x2="150" y2="194" stroke="rgba(192,57,43,0.25)" stroke-width="1"/>
-  <line x1="78" y1="194" x2="150" y2="40" stroke="rgba(201,168,76,0.15)" stroke-width="0.5"/>
-  <line x1="222" y1="194" x2="150" y2="40" stroke="rgba(192,57,43,0.2)" stroke-width="0.5"/>
-</svg>
-<div class="triangle-inner">
-<div class="t-half t-half-left">
-<div class="t-label">Våknopp</div>
-<div class="t-name" id="cert-archetype-name">Søkeren</div>
-<div class="t-sub" id="cert-archetype-sub">Du leter...</div>
-</div>
-<div class="t-half t-half-right">
-<div class="t-label">Matrise</div>
-<div class="t-name" id="cert-profile-name">Observerende</div>
-<div class="t-sub" id="cert-profile-status">Du ser...</div>
-</div>
-</div>
-</div>
-
-<div class="spectrum-wrap">
-<div class="spectrum-labels"><span>Sovende</span><span>Opplyst</span></div>
-<div class="spectrum-bar"><div class="spectrum-dot" id="spectrum-dot"></div></div>
-<div class="spectrum-score">Din poengsum: <strong id="spectrum-score-num">67</strong></div>
-<div class="spectrum-position" id="spectrum-position">«Du er her.»</div>
-<div class="spectrum-population" id="spectrum-population"></div>
-</div>
-
-<div class="chart-wrap"><canvas id="radar-canvas"></canvas></div>
-
-<p class="cert-description" id="cert-desc-full"></p>
-
-<div class="cert-divider"></div>
-<div class="cert-footer">Matrise-testen · ENK</div>
-<div class="cert-url">matrise.enkelliv.no</div>
-</div>
-
-<div class="cert-actions">
-<button class="btn small" id="btn-download">Last ned bilde</button>
-<button class="btn small" id="btn-share">Del resultat</button>
-</div>
-<button class="btn ghost" id="btn-restart" style="margin-top:.5rem">Start på nytt</button>
-<footer>Matrise-testen · <a href="https://enkelliv.no" style="color:var(--muted)">ENK</a></footer>
-</div>
-</div>
-
-
-<script>
-// ==================== DATA: VAKNOPP QUESTIONS ====================
-var vaknoppQuestions = [
-  {id:1,section:"Slik ser du verden utenfor deg",text:"Når du ser på en fremmed — hva legger du merke til først?",options:[
-    {text:"Øynene deres",archetype:"Speilet"},{text:"Hva de har på seg",archetype:"Søkeren"},{text:"Stemningen rundt dem",archetype:"Vandreren"},{text:"Om de ser glade eller triste ut",archetype:"Broen"}]},
-  {id:2,section:"Slik ser du verden utenfor deg",text:"Hva plager deg mest ved verden akkurat nå?",options:[
-    {text:"Urettferdighet",archetype:"Broen"},{text:"At ingen lytter til hverandre",archetype:"Speilet"},{text:"Alt bråket — stillheten er borte",archetype:"Lyset"},{text:"Jeg vet ikke — jeg kjenner mest på mitt eget",archetype:"Søkeren"}]},
-  {id:3,section:"Slik ser du verden utenfor deg",text:"Hva stoler du mest på?",options:[
-    {text:"Det jeg kan se og ta på",archetype:"Søkeren"},{text:"Magefølelsen min",archetype:"Vandreren"},{text:"Mønstrene — ting som gjentar seg",archetype:"Broen"},{text:"Det stille svaret som kommer når jeg slutter å lete",archetype:"Lyset"}]},
-  {id:4,section:"Slik ser du verden utenfor deg",text:"Hva definerer et menneske — mest av alt?",options:[
-    {text:"Handlingene deres",archetype:"Søkeren"},{text:"Intensjonene deres",archetype:"Speilet"},{text:"Måten de får andre til å føle seg",archetype:"Broen"},{text:"Ingenting — og alt. Vi er mer enn én definisjon",archetype:"Lyset"}]},
-  {id:5,section:"Slik ser du deg selv",text:"Når du er alene — hvor går tankene dine?",options:[
-    {text:"Til fortiden — ting jeg skulle gjort annerledes",archetype:"Søkeren"},{text:"Til fremtiden — hva som kommer",archetype:"Vandreren"},{text:"Til nået — jeg er her, dette er nok",archetype:"Lyset"},{text:"Til et sted mellom — jeg dagdrømmer, forsvinner",archetype:"Speilet"}]},
-  {id:6,section:"Slik ser du deg selv",text:"Hva er ditt forhold til stillhet?",options:[
-    {text:"Den gjør meg urolig",archetype:"Søkeren"},{text:"Jeg søker den — men finner den sjelden",archetype:"Vandreren"},{text:"Den er der. Jeg har bare ikke lyttet før.",archetype:"Speilet"},{text:"Stillhet og jeg er gamle venner",archetype:"Lyset"}]},
-  {id:7,section:"Slik ser du deg selv",text:"Hva er den sterkeste følelsen du kjenner akkurat nå?",options:[
-    {text:"Lengsel — etter noe jeg ikke kan navngi",archetype:"Søkeren"},{text:"Nysgjerrighet — hva venter rundt hjørnet?",archetype:"Vandreren"},{text:"Takknemlighet — for det som er, her og nå",archetype:"Lyset"},{text:"En blanding. Alt på en gang",archetype:"Speilet"}]},
-  {id:8,section:"Slik ser du deg selv",text:"Hva dømmer du hardest ved deg selv?",options:[
-    {text:"At jeg ikke har kommet lenger",archetype:"Søkeren"},{text:"At jeg noen ganger ikke bryr meg nok",archetype:"Broen"},{text:"At jeg tviler — på alt, hele tiden",archetype:"Vandreren"},{text:"Jeg har sluttet å dømme. Jeg bare er.",archetype:"Lyset"}]},
-  {id:9,section:"Det du bærer på — og er klar for",text:"Hva tror du er meningen med livet ditt?",options:[
-    {text:"Jeg leter fortsatt",archetype:"Søkeren"},{text:"Å finne ut av det — én dag av gangen",archetype:"Vandreren"},{text:"Å være noe for noen",archetype:"Broen"},{text:"Å våkne. Og hjelpe andre å våkne",archetype:"Lyset"}]},
-  {id:10,section:"Det du bærer på — og er klar for",text:"Hva er ditt forhold til døden?",options:[
-    {text:"Jeg unngår å tenke på den",archetype:"Søkeren"},{text:"Den skremmer meg — men jeg vet den er der",archetype:"Vandreren"},{text:"Den gir livet mening",archetype:"Speilet"},{text:"En dør. Ikke en vegg",archetype:"Lyset"}]},
-  {id:11,section:"Det du bærer på — og er klar for",text:"Hva trenger du mest akkurat nå?",options:[
-    {text:"Svar",archetype:"Søkeren"},{text:"Retning",archetype:"Vandreren"},{text:"Sammenheng",archetype:"Speilet"},{text:"Ro",archetype:"Lyset"}]},
-  {id:12,section:"Det du bærer på — og er klar for",text:"Hvis du kunne gi én gave til verden — hva ville det vært?",options:[
-    {text:"Sannhet",archetype:"Speilet"},{text:"Fred",archetype:"Broen"},{text:"At ingen følte seg alene",archetype:"Vandreren"},{text:"Stillhet — så alle kunne høre seg selv",archetype:"Lyset"}]}
-];
-
-var vaknoppArchetypes = {
-  "Søkeren":{name:"Søkeren",subtitle:"Du leter. Du vet ikke alltid hva — men du vet at noe mangler.",desc:"Du kjenner en lengsel du ikke kan sette ord på. Som et savn uten navn. Du har lett i bøker, i samtaler, i andres øyne — men det du søker, er kanskje nærmere enn du tror. Søkeren er ikke tapt. Søkeren er i bevegelse. Og spørsmålet er ofte viktigere enn svaret."},
-  "Vandreren":{name:"Vandreren",subtitle:"Du har begynt å se mønstre. Spørsmålene har åpnet seg.",desc:"Du går. Én fot foran den andre. Noen ganger uten kart — men du går likevel. Du har begynt å merke at ting henger sammen. En samtale her. En bok der. En tilfeldighet som ikke føltes tilfeldig. Vandreren spør ikke «er jeg fremme snart?» — vandreren vet at veien er stedet."},
-  "Speilet":{name:"Speilet",subtitle:"Du ser deg selv klart. Og gjennom deg — andre.",desc:"Du har stått stille lenge nok til å se ditt eget speilbilde. Ikke den du ønsker du var. Ikke den du later som. Deg. Og i den klarheten har du oppdaget noe: når du ser deg selv ærlig, ser du også andre klarere. Speilet dømmer ikke. Speilet viser."},
-  "Broen":{name:"Broen",subtitle:"Du ser sammenhengen mellom alt. Du forbinder.",desc:"Du er limet. Den andre snakker, du hører det usagte. To mennesker står langt fra hverandre, du ser hva de deler. Broen trenger ikke å være sterkest — den trenger bare å være der. Du bærer andres vekt uten å knekke. Ikke fordi du må. Fordi du kan."},
-  "Lyset":{name:"Lyset",subtitle:"Du har våknet. Du ser hva som alltid var der.",desc:"Du har sett gjennom sløret. Stillheten er ditt hjem. Du vet at mørket ikke er fienden — bare fravær. Du bærer noe varmt i deg, og du tenner det i andre uten å mene å gjøre det. Lyset preker ikke. Lyset bare er. Og det er nok."}
-};
-
-// ==================== DATA: MATRISE QUESTIONS ====================
-var matriseQuestions = [
-  {id:1,level:1,levelName:"Sl\u00f8ret",text:"Hvilken historie om livet mitt behandler jeg som en absolutt virkelighet, n\u00e5r den egentlig bare er et mentalt skript jeg har arvet eller konstruert?",options:[
-    {letter:"A",text:"Jeg m\u00e5 klare alt alene, for ingen andre kommer til \u00e5 hjelpe meg.",points:1},{letter:"B",text:"Mine grenser eksisterer ikke; det som er mitt, tilh\u00f8rer ogs\u00e5 andre.",points:1},{letter:"C",text:"Jeg er en person som ikke mestrer motgang eller store endringer.",points:2},{letter:"D",text:"Jeg m\u00e5 alltid v\u00e6re den snille og tilpasse meg for \u00e5 bli akseptert.",points:4},{letter:"E",text:"Slik livet mitt er n\u00e5, er forh\u00e5ndsbestemt \u2014 jeg har ingen reell p\u00e5virkning.",points:5}]},
-  {id:2,level:1,levelName:"Sl\u00f8ret",text:"Hvilke daglige rutiner og vaner fungerer som min \u00abbl\u00e5 pille\u00bb \u2014 ved \u00e5 bed\u00f8ve meg akkurat nok til at jeg ikke kjenner p\u00e5 uroen om at noe er galt?",options:[
-    {letter:"A",text:"Konstant scrolling p\u00e5 telefonen, sosiale medier eller TV-titting.",points:1},{letter:"B",text:"Overarbeid, konstant overveldelse og f\u00f8lelsen av at jeg alltid m\u00e5 prestere.",points:2},{letter:"C",text:"Spising, snacking, shopping eller andre impulshandlinger.",points:4},{letter:"D",text:"Jeg holder meg opptatt med andres problemer for \u00e5 slippe \u00e5 se mine egne.",points:5},{letter:"E",text:"Jeg har ingen slike vaner \u2014 jeg m\u00f8ter det som kommer.",points:5}]},
-  {id:3,level:1,levelName:"Sl\u00f8ret",text:"N\u00e5r jeg h\u00f8rer \u00abdu har et st\u00f8rre potensial\u00bb \u2014 hvilken indre stemme vinner?",options:[
-    {letter:"A",text:"\u00abPotensial? Jeg har knapt nok tid til \u00e5 komme gjennom dagen.\u00bb",points:1},{letter:"B",text:"\u00abKanskje. Men potensialet har alltid en pris jeg ikke har r\u00e5d til.\u00bb",points:2},{letter:"C",text:"\u00abJeg vet det. Jeg kjenner det. Jeg bare vet ikke hvordan jeg kommer dit.\u00bb",points:4},{letter:"D",text:"\u00abJeg er midt i det allerede \u2014 jeg bare tviler p\u00e5 om jeg gj\u00f8r det riktig.\u00bb",points:5},{letter:"E",text:"\u00abJeg trenger ikke \u00e5 h\u00f8re det fra noen. Jeg lever det.\u00bb",points:5}]},
-  {id:4,level:2,levelName:"Forsvaret",text:"Hva er din st\u00f8rste indre kritikers favoritt-setning \u2014 den du h\u00f8rer om og om igjen?",options:[
-    {letter:"A",text:"\u00abHvem tror du egentlig at du er?\u00bb",points:1},{letter:"B",text:"\u00abAndre har det verre. Du har ingenting \u00e5 klage over.\u00bb",points:2},{letter:"C",text:"\u00abDu kommer aldri til \u00e5 lykkes, s\u00e5 hvorfor pr\u00f8ve?\u00bb",points:3},{letter:"D",text:"\u00abN\u00e5r de ser hvem du egentlig er, vil de forsvinne.\u00bb",points:4},{letter:"E",text:"\u00abDen stemmen har jeg gjenkjent og avv\u00e6pnet.\u00bb",points:5}]},
-  {id:5,level:2,levelName:"Forsvaret",text:"Hvordan reagerer kroppen din n\u00e5r du g\u00e5r utenfor komfortsonen?",options:[
-    {letter:"A",text:"Jeg unng\u00e5r situasjonen helt \u2014 sier nei takk, finner en unnskyldning.",points:1},{letter:"B",text:"Hjertebank, svette, lyst til \u00e5 flykte \u2014 klassisk fight-or-flight.",points:2},{letter:"C",text:"Jeg kjenner motstand, men g\u00e5r gjennom den. Ubehaget er midlertidig.",points:3},{letter:"D",text:"Jeg har l\u00e6rt \u00e5 puste meg gjennom det. Kroppen overreagerer, jeg vet det.",points:4},{letter:"E",text:"Komfortsonen og jeg har et avslappet forhold. Jeg kjenner grensene mine og respekterer dem.",points:5}]},
-  {id:6,level:2,levelName:"Forsvaret",text:"Hvilken av disse er den st\u00f8rste l\u00f8gnen du forteller deg selv?",options:[
-    {letter:"A",text:"\u00abJeg er ikke god nok.\u00bb",points:1},{letter:"B",text:"\u00abDet er for sent \u00e5 endre noe n\u00e5.\u00bb",points:2},{letter:"C",text:"\u00abJeg m\u00e5 ha full kontroll for \u00e5 v\u00e6re trygg.\u00bb",points:3},{letter:"D",text:"\u00abHvis jeg viser s\u00e5rbarhet, blir jeg avvist.\u00bb",points:4},{letter:"E",text:"\u00abJeg ser l\u00f8gnene n\u00e5r de dukker opp. De f\u00e5r st\u00e5 der. Jeg biter ikke p\u00e5.\u00bb",points:5}]},
-  {id:7,level:3,levelName:"Visdommen",text:"Hvem er du n\u00e5r ingen ser?",options:[
-    {letter:"A",text:"En som er sliten og \u00f8nsker \u00e5 flykte fra alt.",points:1},{letter:"B",text:"En som tviler p\u00e5 alt og alle, inkludert meg selv.",points:2},{letter:"C",text:"En som observerer. Som ser verden utenfra.",points:3},{letter:"D",text:"En som er i dialog med seg selv \u2014 \u00e6rlig, direkte, uten filter.",points:4},{letter:"E",text:"Meg selv. Helt. Uten behov for skjold.",points:5}]},
-  {id:8,level:3,levelName:"Visdommen",text:"Hva er ditt forhold til din egen fortid?",options:[
-    {letter:"A",text:"Jeg er et offer for den. Alt galt kommer derfra.",points:1},{letter:"B",text:"Jeg forst\u00e5r den intellektuelt, men kan ikke legge den ned.",points:2},{letter:"C",text:"Jeg ser m\u00f8nstrene og bryter dem \u00e9n etter \u00e9n.",points:3},{letter:"D",text:"Den er en film jeg s\u00e5 en gang. Den definerer ikke den jeg er n\u00e5.",points:4},{letter:"E",text:"Fortid, n\u00e5tid og fremtid er ett. Jeg b\u00e6rer alt \u2014 men lar det flyte.",points:5}]},
-  {id:9,level:3,levelName:"Visdommen",text:"N\u00e5r du elsker noen \u2014 hva skjer med grensene dine?",options:[
-    {letter:"A",text:"De forsvinner. Jeg oppl\u00f8ses helt i den andre.",points:1},{letter:"B",text:"Jeg blir usikker. Gir for mye. Angrer etterp\u00e5.",points:2},{letter:"C",text:"Jeg holder en del av meg tilbake \u2014 for sikkerhet.",points:3},{letter:"D",text:"Jeg vet hvor jeg slutter og den andre begynner. Og inviterer likevel.",points:4},{letter:"E",text:"Kj\u00e6rlighet og grenser er ikke motsetninger. De er to sider av samme mynt.",points:5}]},
-  {id:10,level:4,levelName:"Omkodingen",text:"Hva gj\u00f8r du n\u00e5r livet igjen serverer deg den samme gamle testen \u2014 i ny innpakning?",options:[
-    {letter:"A",text:"G\u00e5r i samme felle. Reagerer. Blir sint eller lei meg.",points:1},{letter:"B",text:"Kjenner smerten f\u00f8rst og ser m\u00f8nsteret etterp\u00e5.",points:2},{letter:"C",text:"Gjenkjenner m\u00f8nsteret og n\u00f8ler. Vurderer \u00e5 velge annerledes.",points:3},{letter:"D",text:"M\u00f8ter det med nysgjerrighet istedenfor frykt.",points:4},{letter:"E",text:"Livet serverer ikke tester lenger. Jeg skaper nye.",points:5}]},
-  {id:11,level:4,levelName:"Omkodingen",text:"Hvor kommer tankene dine fra?",options:[
-    {letter:"A",text:"Fra andre. Alt jeg tenker er noe jeg har h\u00f8rt f\u00f8r.",points:1},{letter:"B",text:"Fra samfunnets programmering \u2014 skole, media, oppdragelse.",points:2},{letter:"C",text:"De kommer og g\u00e5r. Jeg er ikke alltid ansvarlig for dem.",points:3},{letter:"D",text:"Jeg velger hvilke jeg gir energi. Resten passerer.",points:4},{letter:"E",text:"De oppst\u00e5r i stillhet. Jeg f\u00f8lger de som leder til vekst.",points:5}]},
-  {id:12,level:4,levelName:"Omkodingen",text:"Hva er frihet \u2014 for deg?",options:[
-    {letter:"A",text:"\u00c5 slippe unna. \u00c5 ikke ha forpliktelser.",points:1},{letter:"B",text:"\u00c5 ha nok penger og tid til \u00e5 gj\u00f8re hva jeg vil.",points:2},{letter:"C",text:"\u00c5 kunne si nei uten \u00e5 forklare meg.",points:3},{letter:"D",text:"\u00c5 v\u00e6re fullstendig \u00e6rlig med meg selv.",points:4},{letter:"E",text:"\u00c5 vite at jeg er skaperen av min virkelighet, uten forbehold.",points:5}]}
-];
-
-var matriseProfiles = {
-  "Sovende":{name:"Sovende",status:"Du sover. Zoo f\u00f8les som hjemme.",range:"0\u201320%",population:"6 av 10",desc:"Fullstendig identifisert med egoet, arvede skript og samfunnets forventninger. Egne grenser oppleves ikke-eksisterende. Unnvikelsesmekanismene (\u00abbl\u00e5 piller\u00bb) styrer hverdagen uten at du er klar over det selv."},
-  "Urolig":{name:"Urolig",status:"Du v\u00e5kner. Noe skurrer.",range:"21\u201350%",population:"1 av 4",desc:"Du har begynt \u00e5 kjenne skurringen i matrisen og ser at de gamle m\u00f8nstrene begrenser deg. Frykt og den indre kritikeren kjemper imot hver gang du pr\u00f8ver \u00e5 g\u00e5 utenfor komfortsonen."},
-  "Observerende":{name:"Observerende",status:"Du ser. Du har zoomet ut.",range:"51\u201380%",population:"1 av 10",desc:"Klar over at tankene og f\u00f8lelsene er programmering snarere enn sannhet. Klarer i \u00f8kende grad \u00e5 skille mellom din egen indre observat\u00f8r og de ytre forventningene. Grenser settes bevisst."},
-  "Omkodende":{name:"Omkodende",status:"Du river. Gamle programmer slettes.",range:"81\u201398%",population:"1 av 25",desc:"M\u00f8nsterstyring og automatiserte vaner er i stor grad brutt. Du forst\u00e5r at ytre motgang er projeksjoner fra eget sinnsmaskineri, og tar aktivt eierskap til \u00e5 skrive om egne overbevisninger."},
-  "Opplyst":{name:"Opplyst",status:"Du er v\u00e5ken. Jungelen er hjemme.",range:"99\u2013100%",population:"1 av 100",desc:"Fullstendig frigjort fra illusjonen om at du er bundet av fortid, arv eller andres skript. Opererer ut fra ren tilstedev\u00e6relse, ubegrenset skaperkraft og dyp indre autoritet."}
-};
-
-// ==================== STATE ====================
-var phase = "landing"; // landing | payment | vaknopp | matrise | result
-var currentVaknoppQ = 0;
-var currentMatriseQ = 0;
-var vaknoppAnswers = []; // {archetype: "Søkeren"}
-var matriseAnswers = []; // {points: N, level: N}
-var hasPaid = false;
-var chartInstance = null;
-
-// ==================== DOM REFS ====================
-var stepLanding = document.getElementById("step-landing");
-var stepPayment = document.getElementById("step-payment");
-var stepQuizVaknopp = document.getElementById("step-quiz-vaknopp");
-var stepTransition = document.getElementById("step-transition");
-var stepQuizMatrise = document.getElementById("step-quiz-matrise");
-var stepLoading = document.getElementById("step-loading");
-var stepResult = document.getElementById("step-result");
-
-// ==================== TRANSITIONS ====================
-function transition(fromEl, toEl, cb) {
-  fromEl.classList.add("fade-out");
-  setTimeout(function(){
-    fromEl.classList.add("hidden");
-    fromEl.classList.remove("fade-out");
-    toEl.classList.remove("hidden");
-    toEl.classList.add("fade-in");
-    setTimeout(function(){toEl.classList.remove("fade-in");},600);
-    if(cb) cb();
-  }, 400);
-}
-
-function hideAll() {
-  [stepLanding, stepPayment, stepQuizVaknopp, stepTransition, stepQuizMatrise, stepLoading, stepResult].forEach(function(s){ s.classList.add("hidden"); });
-}
-
-// ==================== LANDING -> PAYMENT ====================
-document.getElementById("btn-start").addEventListener("click", function(){
-  transition(stepLanding, stepPayment);
-});
-
-// ==================== PAYMENT ====================
-document.getElementById("btn-vipps").addEventListener("click", function(){
-  alert("Vipps-integrasjon kommer \u2014 forel\u00f8pig kan du teste gratis.");
-  hasPaid = true;
-  startVaknopp();
-});
-
-document.getElementById("btn-skip").addEventListener("click", function(){
-  hasPaid = true;
-  startVaknopp();
-});
-
-// ==================== VAKNOPP QUIZ ====================
-function startVaknopp() {
-  hideAll();
-  currentVaknoppQ = 0;
-  vaknoppAnswers = [];
-  stepQuizVaknopp.classList.remove("hidden");
-  renderVaknoppQuestion();
-}
-
-function renderVaknoppQuestion() {
-  var q = vaknoppQuestions[currentVaknoppQ];
-  var sectionEl = document.getElementById("vaknopp-section");
-  var progressFill = document.getElementById("progress-fill-vaknopp");
-  var progressText = document.getElementById("progress-text-vaknopp");
-  var questionText = document.getElementById("question-text-vaknopp");
-  var optionsEl = document.getElementById("options-vaknopp");
-
-  sectionEl.textContent = q.section;
-  progressFill.style.width = ((currentVaknoppQ + 1) / vaknoppQuestions.length * 100) + "%";
-  progressText.textContent = "Sp\u00f8rsm\u00e5l " + (currentVaknoppQ + 1) + " av " + vaknoppQuestions.length;
-  questionText.textContent = q.text;
-  optionsEl.innerHTML = "";
-
-  q.options.forEach(function(opt, i) {
-    var btn = document.createElement("button");
-    btn.className = "opt-btn";
-    btn.textContent = opt.text;
-    btn.addEventListener("click", function(){
-      vaknoppAnswers.push({archetype: opt.archetype});
-      currentVaknoppQ++;
-      if (currentVaknoppQ < vaknoppQuestions.length) {
-        renderVaknoppQuestion();
-      } else {
-        transition(stepQuizVaknopp, stepTransition);
-      }
-    });
-    optionsEl.appendChild(btn);
-  });
-}
-
-// ==================== TRANSITION -> MATRISE ====================
-document.getElementById("btn-transition").addEventListener("click", function(){
-  startMatrise();
-});
-
-function startMatrise() {
-  hideAll();
-  currentMatriseQ = 0;
-  matriseAnswers = [];
-  stepQuizMatrise.classList.remove("hidden");
-  renderMatriseQuestion();
-}
-
-function renderMatriseQuestion() {
-  var q = matriseQuestions[currentMatriseQ];
-  var sectionEl = document.getElementById("matrise-section");
-  var progressFill = document.getElementById("progress-fill-matrise");
-  var progressText = document.getElementById("progress-text-matrise");
-  var questionText = document.getElementById("question-text-matrise");
-  var optionsEl = document.getElementById("options-matrise");
-
-  sectionEl.textContent = q.levelName;
-  progressFill.style.width = ((currentMatriseQ + 1) / matriseQuestions.length * 100) + "%";
-  progressText.textContent = "P\u00e5stand " + (currentMatriseQ + 1) + " av " + matriseQuestions.length;
-  questionText.textContent = q.text;
-  optionsEl.innerHTML = "";
-
-  q.options.forEach(function(opt) {
-    var btn = document.createElement("button");
-    btn.className = "opt-btn";
-    btn.innerHTML = "<strong>" + opt.letter + "</strong> &nbsp; " + opt.text;
-    btn.addEventListener("click", function(){
-      matriseAnswers.push({points: opt.points, level: q.level});
-      currentMatriseQ++;
-      if (currentMatriseQ < matriseQuestions.length) {
-        renderMatriseQuestion();
-      } else {
-        // All done -> show loading -> result
-        hideAll();
-        stepLoading.classList.remove("hidden");
-        setTimeout(showResult, 1500);
-      }
-    });
-    optionsEl.appendChild(btn);
-  });
-}
-
-// ==================== SCORING ====================
-function calcVaknoppResult() {
-  var counts = {};
-  vaknoppAnswers.forEach(function(a) {
-    counts[a.archetype] = (counts[a.archetype] || 0) + 1;
-  });
-  // Find max - last question tiebreaker
-  var maxCount = 0;
-  var topArchetype = null;
-  Object.keys(counts).forEach(function(key) {
-    if (counts[key] > maxCount) {
-      maxCount = counts[key];
-      topArchetype = key;
-    } else if (counts[key] === maxCount && topArchetype) {
-      // Tie: last answer wins
-      var lastMatch = null;
-      for (var i = vaknoppAnswers.length - 1; i >= 0; i--) {
-        if (vaknoppAnswers[i].archetype === key || vaknoppAnswers[i].archetype === topArchetype) {
-          lastMatch = vaknoppAnswers[i].archetype;
-          break;
-        }
-      }
-      if (lastMatch) topArchetype = lastMatch;
-    }
-  });
-  return { archetype: topArchetype, counts: counts, maxCount: maxCount };
-}
-
-function calcMatriseResult() {
-  var totalPoints = 0;
-  var levels = {1:0,2:0,3:0,4:0};
-  matriseAnswers.forEach(function(a) {
-    totalPoints += a.points;
-    levels[a.level] = (levels[a.level] || 0) + a.points;
-  });
-  // Points range: 12-60 -> 0-100%
-  var pct = Math.round(((totalPoints - 12) / 48) * 100);
-  if (pct < 0) pct = 0;
-  if (pct > 100) pct = 100;
-
-  // Profile
-  var profileName;
-  if (pct <= 20) profileName = "Sovende";
-  else if (pct <= 50) profileName = "Urolig";
-  else if (pct <= 80) profileName = "Observerende";
-  else if (pct <= 98) profileName = "Omkodende";
-  else profileName = "Opplyst";
-
-  // Level scores: max 15 per level -> 0-100
-  var l1 = Math.round((levels[1] / 15) * 100);
-  var l2 = Math.round((levels[2] / 15) * 100);
-  var l3 = Math.round((levels[3] / 15) * 100);
-  var l4 = Math.round((levels[4] / 15) * 100);
-
-  return { pct: pct, profile: profileName, levels: [l1,l2,l3,l4], totalPoints: totalPoints };
-}
-
-// ==================== SHOW RESULT ====================
-function showResult() {
-  var vakResult = calcVaknoppResult();
-  var matResult = calcMatriseResult();
-  var archetype = vaknoppArchetypes[vakResult.archetype];
-  var profile = matriseProfiles[matResult.profile];
-
-  // Dual boxes
-  document.getElementById("cert-archetype-name").textContent = archetype.name;
-  document.getElementById("cert-archetype-sub").textContent = archetype.subtitle;
-  document.getElementById("cert-profile-name").textContent = profile.name;
-  document.getElementById("cert-profile-status").textContent = profile.status;
-
-  // Spectrum
-  document.getElementById("spectrum-dot").style.left = matResult.pct + "%";
-  document.getElementById("spectrum-score-num").textContent = matResult.pct;
-  document.getElementById("spectrum-position").textContent = "\u00AB" + profile.name + ". " + profile.status + "\u00BB";
-  document.getElementById("spectrum-population").textContent = "Dette resultatet f\u00e5r ~" + profile.population + " som tar testen";
-
-  // Combined description
-  document.getElementById("cert-desc-full").textContent = archetype.desc + " " + profile.desc;
-
-  // Show result step
-  hideAll();
-  stepResult.classList.remove("hidden");
-  stepResult.classList.add("fade-in");
-  setTimeout(function(){ stepResult.classList.remove("fade-in"); }, 600);
-
-  // Draw radar after DOM visible
-  setTimeout(function(){ drawRadar(matResult); }, 400);
-}
-
-function drawRadar(matResult) {
-  if (chartInstance) chartInstance.destroy();
-  var ctx = document.getElementById("radar-canvas");
-  if (!ctx) return;
-  ctx = ctx.getContext("2d");
-  chartInstance = new Chart(ctx, {
-    type: "radar",
-    data: {
-      labels: ["Sl\u00f8ret", "Forsvaret", "Visdommen", "Omkodingen", "Total"],
-      datasets: [{
-        label: "Din profil",
-        data: matResult.levels.concat([matResult.pct]),
-        backgroundColor: "rgba(192,57,43,0.18)",
-        borderColor: "#c0392b",
-        borderWidth: 2,
-        pointBackgroundColor: "#e74c3c",
-        pointBorderColor: "#0a0a0a",
-        pointBorderWidth: 2,
-        pointRadius: 4
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: true,
-      scales: { r: { beginAtZero: true, max: 100,
-        ticks: { stepSize: 20, color: "#6b6660", backdropColor: "transparent", font: {size: 9} },
-        grid: { color: "rgba(255,255,255,0.06)" },
-        angleLines: { color: "rgba(255,255,255,0.08)" },
-        pointLabels: { color: "#e0ddd6", font: {size: 10, family: "Georgia,serif"} }
-      }},
-      plugins: { legend: { display: false } }
-    }
-  });
-}
-
-// ==================== DOWNLOAD ====================
-document.getElementById("btn-download").addEventListener("click", function(){
-  var cert = document.getElementById("certificate");
-  html2canvas(cert, { backgroundColor: "#0a0a0a", scale: 2, useCORS: true, allowTaint: true }).then(function(canvas){
-    var link = document.createElement("a");
-    link.download = "matrise-sertifikat.png";
-    link.href = canvas.toDataURL("image/png");
-    link.click();
-  }).catch(function(){
-    alert("Kunne ikke laste ned. Ta et skjermbilde istedenfor.");
-  });
-});
-
-// ==================== SHARE ====================
-document.getElementById("btn-share").addEventListener("click", function(){
-  var vakResult = calcVaknoppResult();
-  var matResult = calcMatriseResult();
-  var archetype = vaknoppArchetypes[vakResult.archetype];
-  var profile = matriseProfiles[matResult.profile];
-  var title = "Min Matrise-profil: " + profile.name + " (" + matResult.pct + "%) | Arketype: " + archetype.name;
-  var text = profile.name + ": " + profile.status + " | " + archetype.name + ": " + archetype.subtitle;
-  var url = "https://matrise.enkelliv.no";
-  if (navigator.share) {
-    navigator.share({ title: title, text: text, url: url }).catch(function(){});
-  } else {
-    navigator.clipboard.writeText(title + "\n\n" + text + "\n" + url).then(function(){
-      alert("Kopiert! Lim inn p\u00e5 Facebook, Messenger eller hvor du vil dele.");
-    }).catch(function(){
-      prompt("Kopier:", title + "\n\n" + text + "\n" + url);
-    });
-  }
-});
-
-// ==================== RESTART ====================
-document.getElementById("btn-restart").addEventListener("click", function(){
-  hideAll();
-  stepLanding.classList.remove("hidden");
-  stepLanding.classList.add("fade-in");
-  setTimeout(function(){ stepLanding.classList.remove("fade-in"); }, 600);
-  currentVaknoppQ = 0;
-  currentMatriseQ = 0;
-  vaknoppAnswers = [];
-  matriseAnswers = [];
-  if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
-});
-
-// ==================== INIT ====================
-stepLanding.classList.remove("hidden");
-</script>
-</body>
-</html>
+<!-- ============ VAKNOPP QUIZ ============ -->
+<div class="step hidden" id="step-quiz-vaknopp">
+<div class="section-badge" id="vaknopp-section">VÃ¥knopp</div>
+<div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-fill-vaknopp"></div></div>
+<p class="progress-text" id="progress-text-vaknopp"></p>
+<p class="question-text" id="question-text-vaknopp"></p>
+<div class="options" id="options-vaknopp"></div>
+</div>
+
+<!-- ============ TRANSITION ============ -->
+<div class="step hidden" id="step-transition">
+<h2 style="color:var(--gold)">VÃ¥knopp fullfÃ¸rt</h2>
+<p style="font-size:.9rem;color:var(--muted);max-width:380px">Du har svart pÃ¥ spÃ¸rsmÃ¥lene ingen stiller. NÃ¥ venter maskineriet.</p>
+<div class="landing-card matrise" style="max-width:300px">
+<h3>Matrise</h3>
+<div class="card-subtitle">Poeng. Prosent. Profil.</div>
+<p style="font-size:.7rem;color:var(--muted)">12 pÃ¥stander. 4 nivÃ¥er. Hvor fast sitter du i zoo?</p>
+</div>
+<button class="btn" id="btn-transition">Fortsett</button>
+</div>
+
+<!-- ============ MATRISE QUIZ ============ -->
+<div class="step hidden" id="step-quiz-matrise">
+<div class="section-badge matrise-badge" id="matrise-section">Matrise</div>
+<div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-fill-matrise"></div></div>
+<p class="progress-text" id="progress-text-matrise"></p>
+<p class="question-text" id="question-text-matrise"></p>
+<div class="options" id="options-matrise"></div>
+</div>
+
+<!-- ============ LOADING ============ -->
+<div class="step hidden" id="step-loading">
+<div class="loading-dots"><span></span><span></span><span></span></div>
+<p style="color:var(--muted);margin-top:1rem">Beregner profilen din...</p>
+</div>
+
+<!-- ============ RESULT ============ -->
+<div class="step hidden" id="step-result">
+<div id="certificate">
+<div class="cert-seal"></div>
+<div class="cert-title">Matrise-testen</div>
+<div class="cert-headline">Sertifikat</div>
+<div class="cert-subtitle">VÃ¥knopp + Matrise</div>
+<div class="cert-divider"></div>
+
+<div class="triangle-wrap">
+<svg class="triangle-svg" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid meet">
+  <polygon points="150,6 6,194 294,194" fill="none" stroke="rgba(192,57,43,0.45)" stroke-width="2"/>
+  <line x1="150" y1="40" x2="150" y2="194" stroke="rgba(192,57,43,0.25)" stroke-width="1"/>
+  <line x1="78" y1="194" x2="150" y2="40" stroke="rgba(201,168,76,0.15)" stroke-width="0.5"/>
+  <line x1="222" y1="194" x2="150" y2="40" stroke="rgba(192,57,43,0.2)" stroke-width="0.5"/>
+</svg>
+<div class="triangle-inner">
+<div class="t-half t-half-left">
+<div class="t-label">VÃ¥knopp</div>
+<div class="t-name" id="cert-archetype-name">SÃ¸keren</div>
+<div class="t-sub" id="cert-archetype-sub">Du leter...</div>
+</div>
+<div class="t-half t-half-right">
+<div class="t-label">Matrise</div>
+<div class="t-name" id="cert-profile-name">Observerende</div>
+<div class="t-sub" id="cert-profile-status">Du ser...</div>
+</div>
+</div>
+</div>
+
+<div class="spectrum-wrap">
+<div class="spectrum-labels"><span>Sovende</span><span>Opplyst</span></div>
+<div class="spectrum-bar"><div class="spectrum-dot" id="spectrum-dot"></div></div>
+<div class="spectrum-score">Din poengsum: <strong id="spectrum-score-num">67</strong></div>
+<div class="spectrum-position" id="spectrum-position">Â«Du er her.Â»</div>
+<div class="spectrum-population" id="spectrum-population"></div>
+</div>
+
+<div class="chart-wrap"><canvas id="radar-canvas"></canvas></div>
+
+<p class="cert-description" id="cert-desc-full"></p>
+
+<div class="cert-divider"></div>
+<div class="cert-footer">Matrise-testen Â· ENK</div>
+<div class="cert-url">matrise.enkelliv.no</div>
+</div>
+
+<div class="cert-actions">
+<button class="btn small" id="btn-download">Last ned bilde</button>
+<button class="btn small" id="btn-share">Del resultat</button>
+</div>
+<button class="btn ghost" id="btn-restart" style="margin-top:.5rem">Start pÃ¥ nytt</button>
+<footer>Matrise-testen Â· <a href="https://enkelliv.no" style="color:var(--muted)">ENK</a></footer>
+</div>
+</div>
+
+
+<script>
+// ==================== DATA: VAKNOPP QUESTIONS ====================
+var vaknoppQuestions = [
+  {id:1,section:"Slik ser du verden utenfor deg",text:"NÃ¥r du ser pÃ¥ en fremmed â€” hva legger du merke til fÃ¸rst?",options:[
+    {text:"Ã˜ynene deres",archetype:"Speilet"},{text:"Hva de har pÃ¥ seg",archetype:"SÃ¸keren"},{text:"Stemningen rundt dem",archetype:"Vandreren"},{text:"Om de ser glade eller triste ut",archetype:"Broen"}]},
+  {id:2,section:"Slik ser du verden utenfor deg",text:"Hva plager deg mest ved verden akkurat nÃ¥?",options:[
+    {text:"Urettferdighet",archetype:"Broen"},{text:"At ingen lytter til hverandre",archetype:"Speilet"},{text:"Alt brÃ¥ket â€” stillheten er borte",archetype:"Lyset"},{text:"Jeg vet ikke â€” jeg kjenner mest pÃ¥ mitt eget",archetype:"SÃ¸keren"}]},
+  {id:3,section:"Slik ser du verden utenfor deg",text:"Hva stoler du mest pÃ¥?",options:[
+    {text:"Det jeg kan se og ta pÃ¥",archetype:"SÃ¸keren"},{text:"MagefÃ¸lelsen min",archetype:"Vandreren"},{text:"MÃ¸nstrene â€” ting som gjentar seg",archetype:"Broen"},{text:"Det stille svaret som kommer nÃ¥r jeg slutter Ã¥ lete",archetype:"Lyset"}]},
+  {id:4,section:"Slik ser du verden utenfor deg",text:"Hva definerer et menneske â€” mest av alt?",options:[
+    {text:"Handlingene deres",archetype:"SÃ¸keren"},{text:"Intensjonene deres",archetype:"Speilet"},{text:"MÃ¥ten de fÃ¥r andre til Ã¥ fÃ¸le seg",archetype:"Broen"},{text:"Ingenting â€” og alt. Vi er mer enn Ã©n definisjon",archetype:"Lyset"}]},
+  {id:5,section:"Slik ser du deg selv",text:"NÃ¥r du er alene â€” hvor gÃ¥r tankene dine?",options:[
+    {text:"Til fortiden â€” ting jeg skulle gjort annerledes",archetype:"SÃ¸keren"},{text:"Til fremtiden â€” hva som kommer",archetype:"Vandreren"},{text:"Til nÃ¥et â€” jeg er her, dette er nok",archetype:"Lyset"},{text:"Til et sted mellom â€” jeg dagdrÃ¸mmer, forsvinner",archetype:"Speilet"}]},
+  {id:6,section:"Slik ser du deg selv",text:"Hva er ditt forhold til stillhet?",options:[
+    {text:"Den gjÃ¸r meg urolig",archetype:"SÃ¸keren"},{text:"Jeg sÃ¸ker den â€” men finner den sjelden",archetype:"Vandreren"},{text:"Den er der. Jeg har bare ikke lyttet fÃ¸r.",archetype:"Speilet"},{text:"Stillhet og jeg er gamle venner",archetype:"Lyset"}]},
+  {id:7,section:"Slik ser du deg selv",text:"Hva er den sterkeste fÃ¸lelsen du kjenner akkurat nÃ¥?",options:[
+    {text:"Lengsel â€” etter noe jeg ikke kan navngi",archetype:"SÃ¸keren"},{text:"Nysgjerrighet â€” hva venter rundt hjÃ¸rnet?",archetype:"Vandreren"},{text:"Takknemlighet â€” for det som er, her og nÃ¥",archetype:"Lyset"},{text:"En blanding. Alt pÃ¥ en gang",archetype:"Speilet"}]},
+  {id:8,section:"Slik ser du deg selv",text:"Hva dÃ¸mmer du hardest ved deg selv?",options:[
+    {text:"At jeg ikke har kommet lenger",archetype:"SÃ¸keren"},{text:"At jeg noen ganger ikke bryr meg nok",archetype:"Broen"},{text:"At jeg tviler â€” pÃ¥ alt, hele tiden",archetype:"Vandreren"},{text:"Jeg har sluttet Ã¥ dÃ¸mme. Jeg bare er.",archetype:"Lyset"}]},
+  {id:9,section:"Det du bÃ¦rer pÃ¥ â€” og er klar for",text:"Hva tror du er meningen med livet ditt?",options:[
+    {text:"Jeg leter fortsatt",archetype:"SÃ¸keren"},{text:"Ã… finne ut av det â€” Ã©n dag av gangen",archetype:"Vandreren"},{text:"Ã… vÃ¦re noe for noen",archetype:"Broen"},{text:"Ã… vÃ¥kne. Og hjelpe andre Ã¥ vÃ¥kne",archetype:"Lyset"}]},
+  {id:10,section:"Det du bÃ¦rer pÃ¥ â€” og er klar for",text:"Hva er ditt forhold til dÃ¸den?",options:[
+    {text:"Jeg unngÃ¥r Ã¥ tenke pÃ¥ den",archetype:"SÃ¸keren"},{text:"Den skremmer meg â€” men jeg vet den er der",archetype:"Vandreren"},{text:"Den gir livet mening",archetype:"Speilet"},{text:"En dÃ¸r. Ikke en vegg",archetype:"Lyset"}]},
+  {id:11,section:"Det du bÃ¦rer pÃ¥ â€” og er klar for",text:"Hva trenger du mest akkurat nÃ¥?",options:[
+    {text:"Svar",archetype:"SÃ¸keren"},{text:"Retning",archetype:"Vandreren"},{text:"Sammenheng",archetype:"Speilet"},{text:"Ro",archetype:"Lyset"}]},
+  {id:12,section:"Det du bÃ¦rer pÃ¥ â€” og er klar for",text:"Hvis du kunne gi Ã©n gave til verden â€” hva ville det vÃ¦rt?",options:[
+    {text:"Sannhet",archetype:"Speilet"},{text:"Fred",archetype:"Broen"},{text:"At ingen fÃ¸lte seg alene",archetype:"Vandreren"},{text:"Stillhet â€” sÃ¥ alle kunne hÃ¸re seg selv",archetype:"Lyset"}]}
+];
+
+var vaknoppArchetypes = {
+  "SÃ¸keren":{name:"SÃ¸keren",subtitle:"Du leter. Du vet ikke alltid hva â€” men du vet at noe mangler.",desc:"Du kjenner en lengsel du ikke kan sette ord pÃ¥. Som et savn uten navn. Du har lett i bÃ¸ker, i samtaler, i andres Ã¸yne â€” men det du sÃ¸ker, er kanskje nÃ¦rmere enn du tror. SÃ¸keren er ikke tapt. SÃ¸keren er i bevegelse. Og spÃ¸rsmÃ¥let er ofte viktigere enn svaret."},
+  "Vandreren":{name:"Vandreren",subtitle:"Du har begynt Ã¥ se mÃ¸nstre. SpÃ¸rsmÃ¥lene har Ã¥pnet seg.",desc:"Du gÃ¥r. Ã‰n fot foran den andre. Noen ganger uten kart â€” men du gÃ¥r likevel. Du har begynt Ã¥ merke at ting henger sammen. En samtale her. En bok der. En tilfeldighet som ikke fÃ¸ltes tilfeldig. Vandreren spÃ¸r ikke Â«er jeg fremme snart?Â» â€” vandreren vet at veien er stedet."},
+  "Speilet":{name:"Speilet",subtitle:"Du ser deg selv klart. Og gjennom deg â€” andre.",desc:"Du har stÃ¥tt stille lenge nok til Ã¥ se ditt eget speilbilde. Ikke den du Ã¸nsker du var. Ikke den du later som. Deg. Og i den klarheten har du oppdaget noe: nÃ¥r du ser deg selv Ã¦rlig, ser du ogsÃ¥ andre klarere. Speilet dÃ¸mmer ikke. Speilet viser."},
+  "Broen":{name:"Broen",subtitle:"Du ser sammenhengen mellom alt. Du forbinder.",desc:"Du er limet. Den andre snakker, du hÃ¸rer det usagte. To mennesker stÃ¥r langt fra hverandre, du ser hva de deler. Broen trenger ikke Ã¥ vÃ¦re sterkest â€” den trenger bare Ã¥ vÃ¦re der. Du bÃ¦rer andres vekt uten Ã¥ knekke. Ikke fordi du mÃ¥. Fordi du kan."},
+  "Lyset":{name:"Lyset",subtitle:"Du har vÃ¥knet. Du ser hva som alltid var der.",desc:"Du har sett gjennom slÃ¸ret. Stillheten er ditt hjem. Du vet at mÃ¸rket ikke er fienden â€” bare fravÃ¦r. Du bÃ¦rer noe varmt i deg, og du tenner det i andre uten Ã¥ mene Ã¥ gjÃ¸re det. Lyset preker ikke. Lyset bare er. Og det er nok."}
+};
+
+// ==================== DATA: MATRISE QUESTIONS ====================
+var matriseQuestions = [
+  {id:1,level:1,levelName:"Sl\u00f8ret",text:"Hvilken historie om livet mitt behandler jeg som en absolutt virkelighet, n\u00e5r den egentlig bare er et mentalt skript jeg har arvet eller konstruert?",options:[
+    {letter:"A",text:"Jeg m\u00e5 klare alt alene, for ingen andre kommer til \u00e5 hjelpe meg.",points:1},{letter:"B",text:"Mine grenser eksisterer ikke; det som er mitt, tilh\u00f8rer ogs\u00e5 andre.",points:1},{letter:"C",text:"Jeg er en person som ikke mestrer motgang eller store endringer.",points:2},{letter:"D",text:"Jeg m\u00e5 alltid v\u00e6re den snille og tilpasse meg for \u00e5 bli akseptert.",points:4},{letter:"E",text:"Slik livet mitt er n\u00e5, er forh\u00e5ndsbestemt \u2014 jeg har ingen reell p\u00e5virkning.",points:5}]},
+  {id:2,level:1,levelName:"Sl\u00f8ret",text:"Hvilke daglige rutiner og vaner fungerer som min \u00abbl\u00e5 pille\u00bb \u2014 ved \u00e5 bed\u00f8ve meg akkurat nok til at jeg ikke kjenner p\u00e5 uroen om at noe er galt?",options:[
+    {letter:"A",text:"Konstant scrolling p\u00e5 telefonen, sosiale medier eller TV-titting.",points:1},{letter:"B",text:"Overarbeid, konstant overveldelse og f\u00f8lelsen av at jeg alltid m\u00e5 prestere.",points:2},{letter:"C",text:"Spising, snacking, shopping eller andre impulshandlinger.",points:4},{letter:"D",text:"Jeg holder meg opptatt med andres problemer for \u00e5 slippe \u00e5 se mine egne.",points:5},{letter:"E",text:"Jeg har ingen slike vaner \u2014 jeg m\u00f8ter det som kommer.",points:5}]},
+  {id:3,level:1,levelName:"Sl\u00f8ret",text:"N\u00e5r jeg h\u00f8rer \u00abdu har et st\u00f8rre potensial\u00bb \u2014 hvilken indre stemme vinner?",options:[
+    {letter:"A",text:"\u00abPotensial? Jeg har knapt nok tid til \u00e5 komme gjennom dagen.\u00bb",points:1},{letter:"B",text:"\u00abKanskje. Men potensialet har alltid en pris jeg ikke har r\u00e5d til.\u00bb",points:2},{letter:"C",text:"\u00abJeg vet det. Jeg kjenner det. Jeg bare vet ikke hvordan jeg kommer dit.\u00bb",points:4},{letter:"D",text:"\u00abJeg er midt i det allerede \u2014 jeg bare tviler p\u00e5 om jeg gj\u00f8r det riktig.\u00bb",points:5},{letter:"E",text:"\u00abJeg trenger ikke \u00e5 h\u00f8re det fra noen. Jeg lever det.\u00bb",points:5}]},
+  {id:4,level:2,levelName:"Forsvaret",text:"Hva er din st\u00f8rste indre kritikers favoritt-setning \u2014 den du h\u00f8rer om og om igjen?",options:[
+    {letter:"A",text:"\u00abHvem tror du egentlig at du er?\u00bb",points:1},{letter:"B",text:"\u00abAndre har det verre. Du har ingenting \u00e5 klage over.\u00bb",points:2},{letter:"C",text:"\u00abDu kommer aldri til \u00e5 lykkes, s\u00e5 hvorfor pr\u00f8ve?\u00bb",points:3},{letter:"D",text:"\u00abN\u00e5r de ser hvem du egentlig er, vil de forsvinne.\u00bb",points:4},{letter:"E",text:"\u00abDen stemmen har jeg gjenkjent og avv\u00e6pnet.\u00bb",points:5}]},
+  {id:5,level:2,levelName:"Forsvaret",text:"Hvordan reagerer kroppen din n\u00e5r du g\u00e5r utenfor komfortsonen?",options:[
+    {letter:"A",text:"Jeg unng\u00e5r situasjonen helt \u2014 sier nei takk, finner en unnskyldning.",points:1},{letter:"B",text:"Hjertebank, svette, lyst til \u00e5 flykte \u2014 klassisk fight-or-flight.",points:2},{letter:"C",text:"Jeg kjenner motstand, men g\u00e5r gjennom den. Ubehaget er midlertidig.",points:3},{letter:"D",text:"Jeg har l\u00e6rt \u00e5 puste meg gjennom det. Kroppen overreagerer, jeg vet det.",points:4},{letter:"E",text:"Komfortsonen og jeg har et avslappet forhold. Jeg kjenner grensene mine og respekterer dem.",points:5}]},
+  {id:6,level:2,levelName:"Forsvaret",text:"Hvilken av disse er den st\u00f8rste l\u00f8gnen du forteller deg selv?",options:[
+    {letter:"A",text:"\u00abJeg er ikke god nok.\u00bb",points:1},{letter:"B",text:"\u00abDet er for sent \u00e5 endre noe n\u00e5.\u00bb",points:2},{letter:"C",text:"\u00abJeg m\u00e5 ha full kontroll for \u00e5 v\u00e6re trygg.\u00bb",points:3},{letter:"D",text:"\u00abHvis jeg viser s\u00e5rbarhet, blir jeg avvist.\u00bb",points:4},{letter:"E",text:"\u00abJeg ser l\u00f8gnene n\u00e5r de dukker opp. De f\u00e5r st\u00e5 der. Jeg biter ikke p\u00e5.\u00bb",points:5}]},
+  {id:7,level:3,levelName:"Visdommen",text:"Hvem er du n\u00e5r ingen ser?",options:[
+    {letter:"A",text:"En som er sliten og \u00f8nsker \u00e5 flykte fra alt.",points:1},{letter:"B",text:"En som tviler p\u00e5 alt og alle, inkludert meg selv.",points:2},{letter:"C",text:"En som observerer. Som ser verden utenfra.",points:3},{letter:"D",text:"En som er i dialog med seg selv \u2014 \u00e6rlig, direkte, uten filter.",points:4},{letter:"E",text:"Meg selv. Helt. Uten behov for skjold.",points:5}]},
+  {id:8,level:3,levelName:"Visdommen",text:"Hva er ditt forhold til din egen fortid?",options:[
+    {letter:"A",text:"Jeg er et offer for den. Alt galt kommer derfra.",points:1},{letter:"B",text:"Jeg forst\u00e5r den intellektuelt, men kan ikke legge den ned.",points:2},{letter:"C",text:"Jeg ser m\u00f8nstrene og bryter dem \u00e9n etter \u00e9n.",points:3},{letter:"D",text:"Den er en film jeg s\u00e5 en gang. Den definerer ikke den jeg er n\u00e5.",points:4},{letter:"E",text:"Fortid, n\u00e5tid og fremtid er ett. Jeg b\u00e6rer alt \u2014 men lar det flyte.",points:5}]},
+  {id:9,level:3,levelName:"Visdommen",text:"N\u00e5r du elsker noen \u2014 hva skjer med grensene dine?",options:[
+    {letter:"A",text:"De forsvinner. Jeg oppl\u00f8ses helt i den andre.",points:1},{letter:"B",text:"Jeg blir usikker. Gir for mye. Angrer etterp\u00e5.",points:2},{letter:"C",text:"Jeg holder en del av meg tilbake \u2014 for sikkerhet.",points:3},{letter:"D",text:"Jeg vet hvor jeg slutter og den andre begynner. Og inviterer likevel.",points:4},{letter:"E",text:"Kj\u00e6rlighet og grenser er ikke motsetninger. De er to sider av samme mynt.",points:5}]},
+  {id:10,level:4,levelName:"Omkodingen",text:"Hva gj\u00f8r du n\u00e5r livet igjen serverer deg den samme gamle testen \u2014 i ny innpakning?",options:[
+    {letter:"A",text:"G\u00e5r i samme felle. Reagerer. Blir sint eller lei meg.",points:1},{letter:"B",text:"Kjenner smerten f\u00f8rst og ser m\u00f8nsteret etterp\u00e5.",points:2},{letter:"C",text:"Gjenkjenner m\u00f8nsteret og n\u00f8ler. Vurderer \u00e5 velge annerledes.",points:3},{letter:"D",text:"M\u00f8ter det med nysgjerrighet istedenfor frykt.",points:4},{letter:"E",text:"Livet serverer ikke tester lenger. Jeg skaper nye.",points:5}]},
+  {id:11,level:4,levelName:"Omkodingen",text:"Hvor kommer tankene dine fra?",options:[
+    {letter:"A",text:"Fra andre. Alt jeg tenker er noe jeg har h\u00f8rt f\u00f8r.",points:1},{letter:"B",text:"Fra samfunnets programmering \u2014 skole, media, oppdragelse.",points:2},{letter:"C",text:"De kommer og g\u00e5r. Jeg er ikke alltid ansvarlig for dem.",points:3},{letter:"D",text:"Jeg velger hvilke jeg gir energi. Resten passerer.",points:4},{letter:"E",text:"De oppst\u00e5r i stillhet. Jeg f\u00f8lger de som leder til vekst.",points:5}]},
+  {id:12,level:4,levelName:"Omkodingen",text:"Hva er frihet \u2014 for deg?",options:[
+    {letter:"A",text:"\u00c5 slippe unna. \u00c5 ikke ha forpliktelser.",points:1},{letter:"B",text:"\u00c5 ha nok penger og tid til \u00e5 gj\u00f8re hva jeg vil.",points:2},{letter:"C",text:"\u00c5 kunne si nei uten \u00e5 forklare meg.",points:3},{letter:"D",text:"\u00c5 v\u00e6re fullstendig \u00e6rlig med meg selv.",points:4},{letter:"E",text:"\u00c5 vite at jeg er skaperen av min virkelighet, uten forbehold.",points:5}]}
+];
+
+var matriseProfiles = {
+  "Sovende":{name:"Sovende",status:"Du sover. Zoo f\u00f8les som hjemme.",range:"0\u201320%",population:"6 av 10",desc:"Fullstendig identifisert med egoet, arvede skript og samfunnets forventninger. Egne grenser oppleves ikke-eksisterende. Unnvikelsesmekanismene (\u00abbl\u00e5 piller\u00bb) styrer hverdagen uten at du er klar over det selv."},
+  "Urolig":{name:"Urolig",status:"Du v\u00e5kner. Noe skurrer.",range:"21\u201350%",population:"1 av 4",desc:"Du har begynt \u00e5 kjenne skurringen i matrisen og ser at de gamle m\u00f8nstrene begrenser deg. Frykt og den indre kritikeren kjemper imot hver gang du pr\u00f8ver \u00e5 g\u00e5 utenfor komfortsonen."},
+  "Observerende":{name:"Observerende",status:"Du ser. Du har zoomet ut.",range:"51\u201380%",population:"1 av 10",desc:"Klar over at tankene og f\u00f8lelsene er programmering snarere enn sannhet. Klarer i \u00f8kende grad \u00e5 skille mellom din egen indre observat\u00f8r og de ytre forventningene. Grenser settes bevisst."},
+  "Omkodende":{name:"Omkodende",status:"Du river. Gamle programmer slettes.",range:"81\u201398%",population:"1 av 25",desc:"M\u00f8nsterstyring og automatiserte vaner er i stor grad brutt. Du forst\u00e5r at ytre motgang er projeksjoner fra eget sinnsmaskineri, og tar aktivt eierskap til \u00e5 skrive om egne overbevisninger."},
+  "Opplyst":{name:"Opplyst",status:"Du er v\u00e5ken. Jungelen er hjemme.",range:"99\u2013100%",population:"1 av 100",desc:"Fullstendig frigjort fra illusjonen om at du er bundet av fortid, arv eller andres skript. Opererer ut fra ren tilstedev\u00e6relse, ubegrenset skaperkraft og dyp indre autoritet."}
+};
+
+// ==================== STATE ====================
+var phase = "landing"; // landing | payment | vaknopp | matrise | result
+var currentVaknoppQ = 0;
+var currentMatriseQ = 0;
+var vaknoppAnswers = []; // {archetype: "SÃ¸keren"}
+var matriseAnswers = []; // {points: N, level: N}
+var hasPaid = false;
+var chartInstance = null;
+
+// ==================== DOM REFS ====================
+var stepLanding = document.getElementById("step-landing");
+var stepPayment = document.getElementById("step-payment");
+var stepQuizVaknopp = document.getElementById("step-quiz-vaknopp");
+var stepTransition = document.getElementById("step-transition");
+var stepQuizMatrise = document.getElementById("step-quiz-matrise");
+var stepLoading = document.getElementById("step-loading");
+var stepResult = document.getElementById("step-result");
+
+// ==================== TRANSITIONS ====================
+function transition(fromEl, toEl, cb) {
+  fromEl.classList.add("fade-out");
+  setTimeout(function(){
+    fromEl.classList.add("hidden");
+    fromEl.classList.remove("fade-out");
+    toEl.classList.remove("hidden");
+    toEl.classList.add("fade-in");
+    setTimeout(function(){toEl.classList.remove("fade-in");},600);
+    if(cb) cb();
+  }, 400);
+}
+
+function hideAll() {
+  [stepLanding, stepPayment, stepQuizVaknopp, stepTransition, stepQuizMatrise, stepLoading, stepResult].forEach(function(s){ s.classList.add("hidden"); });
+}
+
+// ==================== LANDING -> PAYMENT ====================
+document.getElementById("btn-start").addEventListener("click", function(){
+  transition(stepLanding, stepPayment);
+});
+
+// ==================== PAYMENT ====================
+document.getElementById("btn-vipps").addEventListener("click", function(){
+  alert("Vipps-integrasjon kommer \u2014 forel\u00f8pig kan du teste gratis.");
+  hasPaid = true;
+  startVaknopp();
+});
+
+document.getElementById("btn-skip").addEventListener("click", function(){
+  hasPaid = true;
+  startVaknopp();
+});
+
+// ==================== VAKNOPP QUIZ ====================
+function startVaknopp() {
+  hideAll();
+  currentVaknoppQ = 0;
+  vaknoppAnswers = [];
+  stepQuizVaknopp.classList.remove("hidden");
+  renderVaknoppQuestion();
+}
+
+function renderVaknoppQuestion() {
+  var q = vaknoppQuestions[currentVaknoppQ];
+  var sectionEl = document.getElementById("vaknopp-section");
+  var progressFill = document.getElementById("progress-fill-vaknopp");
+  var progressText = document.getElementById("progress-text-vaknopp");
+  var questionText = document.getElementById("question-text-vaknopp");
+  var optionsEl = document.getElementById("options-vaknopp");
+
+  sectionEl.textContent = q.section;
+  progressFill.style.width = ((currentVaknoppQ + 1) / vaknoppQuestions.length * 100) + "%";
+  progressText.textContent = "Sp\u00f8rsm\u00e5l " + (currentVaknoppQ + 1) + " av " + vaknoppQuestions.length;
+  questionText.textContent = q.text;
+  optionsEl.innerHTML = "";
+
+  q.options.forEach(function(opt, i) {
+    var btn = document.createElement("button");
+    btn.className = "opt-btn";
+    btn.textContent = opt.text;
+    btn.addEventListener("click", function(){
+      vaknoppAnswers.push({archetype: opt.archetype});
+      currentVaknoppQ++;
+      if (currentVaknoppQ < vaknoppQuestions.length) {
+        renderVaknoppQuestion();
+      } else {
+        transition(stepQuizVaknopp, stepTransition);
+      }
+    });
+    optionsEl.appendChild(btn);
+  });
+}
+
+// ==================== TRANSITION -> MATRISE ====================
+document.getElementById("btn-transition").addEventListener("click", function(){
+  startMatrise();
+});
+
+function startMatrise() {
+  hideAll();
+  currentMatriseQ = 0;
+  matriseAnswers = [];
+  stepQuizMatrise.classList.remove("hidden");
+  renderMatriseQuestion();
+}
+
+function renderMatriseQuestion() {
+  var q = matriseQuestions[currentMatriseQ];
+  var sectionEl = document.getElementById("matrise-section");
+  var progressFill = document.getElementById("progress-fill-matrise");
+  var progressText = document.getElementById("progress-text-matrise");
+  var questionText = document.getElementById("question-text-matrise");
+  var optionsEl = document.getElementById("options-matrise");
+
+  sectionEl.textContent = q.levelName;
+  progressFill.style.width = ((currentMatriseQ + 1) / matriseQuestions.length * 100) + "%";
+  progressText.textContent = "P\u00e5stand " + (currentMatriseQ + 1) + " av " + matriseQuestions.length;
+  questionText.textContent = q.text;
+  optionsEl.innerHTML = "";
+
+  q.options.forEach(function(opt) {
+    var btn = document.createElement("button");
+    btn.className = "opt-btn";
+    btn.innerHTML = "<strong>" + opt.letter + "</strong> &nbsp; " + opt.text;
+    btn.addEventListener("click", function(){
+      matriseAnswers.push({points: opt.points, level: q.level});
+      currentMatriseQ++;
+      if (currentMatriseQ < matriseQuestions.length) {
+        renderMatriseQuestion();
+      } else {
+        // All done -> show loading -> result
+        hideAll();
+        stepLoading.classList.remove("hidden");
+        setTimeout(showResult, 1500);
+      }
+    });
+    optionsEl.appendChild(btn);
+  });
+}
+
+// ==================== SCORING ====================
+function calcVaknoppResult() {
+  var counts = {};
+  vaknoppAnswers.forEach(function(a) {
+    counts[a.archetype] = (counts[a.archetype] || 0) + 1;
+  });
+  // Find max - last question tiebreaker
+  var maxCount = 0;
+  var topArchetype = null;
+  Object.keys(counts).forEach(function(key) {
+    if (counts[key] > maxCount) {
+      maxCount = counts[key];
+      topArchetype = key;
+    } else if (counts[key] === maxCount && topArchetype) {
+      // Tie: last answer wins
+      var lastMatch = null;
+      for (var i = vaknoppAnswers.length - 1; i >= 0; i--) {
+        if (vaknoppAnswers[i].archetype === key || vaknoppAnswers[i].archetype === topArchetype) {
+          lastMatch = vaknoppAnswers[i].archetype;
+          break;
+        }
+      }
+      if (lastMatch) topArchetype = lastMatch;
+    }
+  });
+  return { archetype: topArchetype, counts: counts, maxCount: maxCount };
+}
+
+function calcMatriseResult() {
+  var totalPoints = 0;
+  var levels = {1:0,2:0,3:0,4:0};
+  matriseAnswers.forEach(function(a) {
+    totalPoints += a.points;
+    levels[a.level] = (levels[a.level] || 0) + a.points;
+  });
+  // Points range: 12-60 -> 0-100%
+  var pct = Math.round(((totalPoints - 12) / 48) * 100);
+  if (pct < 0) pct = 0;
+  if (pct > 100) pct = 100;
+
+  // Profile
+  var profileName;
+  if (pct <= 20) profileName = "Sovende";
+  else if (pct <= 50) profileName = "Urolig";
+  else if (pct <= 80) profileName = "Observerende";
+  else if (pct <= 98) profileName = "Omkodende";
+  else profileName = "Opplyst";
+
+  // Level scores: max 15 per level -> 0-100
+  var l1 = Math.round((levels[1] / 15) * 100);
+  var l2 = Math.round((levels[2] / 15) * 100);
+  var l3 = Math.round((levels[3] / 15) * 100);
+  var l4 = Math.round((levels[4] / 15) * 100);
+
+  return { pct: pct, profile: profileName, levels: [l1,l2,l3,l4], totalPoints: totalPoints };
+}
+
+// ==================== SHOW RESULT ====================
+function showResult() {
+  var vakResult = calcVaknoppResult();
+  var matResult = calcMatriseResult();
+  var archetype = vaknoppArchetypes[vakResult.archetype];
+  var profile = matriseProfiles[matResult.profile];
+
+  // Dual boxes
+  document.getElementById("cert-archetype-name").textContent = archetype.name;
+  document.getElementById("cert-archetype-sub").textContent = archetype.subtitle;
+  document.getElementById("cert-profile-name").textContent = profile.name;
+  document.getElementById("cert-profile-status").textContent = profile.status;
+
+  // Spectrum
+  document.getElementById("spectrum-dot").style.left = matResult.pct + "%";
+  document.getElementById("spectrum-score-num").textContent = matResult.pct;
+  document.getElementById("spectrum-position").textContent = "\u00AB" + profile.name + ". " + profile.status + "\u00BB";
+  document.getElementById("spectrum-population").textContent = "Dette resultatet f\u00e5r ~" + profile.population + " som tar testen";
+
+  // Combined description
+  document.getElementById("cert-desc-full").textContent = archetype.desc + " " + profile.desc;
+
+  // Show result step
+  hideAll();
+  stepResult.classList.remove("hidden");
+  stepResult.classList.add("fade-in");
+  setTimeout(function(){ stepResult.classList.remove("fade-in"); }, 600);
+
+  // Draw radar after DOM visible
+  setTimeout(function(){ drawRadar(matResult); }, 400);
+}
+
+function drawRadar(matResult) {
+  if (chartInstance) chartInstance.destroy();
+  var ctx = document.getElementById("radar-canvas");
+  if (!ctx) return;
+  ctx = ctx.getContext("2d");
+  chartInstance = new Chart(ctx, {
+    type: "radar",
+    data: {
+      labels: ["Sl\u00f8ret", "Forsvaret", "Visdommen", "Omkodingen", "Total"],
+      datasets: [{
+        label: "Din profil",
+        data: matResult.levels.concat([matResult.pct]),
+        backgroundColor: "rgba(192,57,43,0.18)",
+        borderColor: "#c0392b",
+        borderWidth: 2,
+        pointBackgroundColor: "#e74c3c",
+        pointBorderColor: "#0a0a0a",
+        pointBorderWidth: 2,
+        pointRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      scales: { r: { beginAtZero: true, max: 100,
+        ticks: { stepSize: 20, color: "#6b6660", backdropColor: "transparent", font: {size: 9} },
+        grid: { color: "rgba(255,255,255,0.06)" },
+        angleLines: { color: "rgba(255,255,255,0.08)" },
+        pointLabels: { color: "#e0ddd6", font: {size: 10, family: "Georgia,serif"} }
+      }},
+      plugins: { legend: { display: false } }
+    }
+  });
+}
+
+// ==================== DOWNLOAD ====================
+document.getElementById("btn-download").addEventListener("click", function(){
+  var cert = document.getElementById("certificate");
+  html2canvas(cert, { backgroundColor: "#0a0a0a", scale: 2, useCORS: true, allowTaint: true }).then(function(canvas){
+    var link = document.createElement("a");
+    link.download = "matrise-sertifikat.png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  }).catch(function(){
+    alert("Kunne ikke laste ned. Ta et skjermbilde istedenfor.");
+  });
+});
+
+// ==================== SHARE ====================
+document.getElementById("btn-share").addEventListener("click", function(){
+  var vakResult = calcVaknoppResult();
+  var matResult = calcMatriseResult();
+  var archetype = vaknoppArchetypes[vakResult.archetype];
+  var profile = matriseProfiles[matResult.profile];
+  var title = "Min Matrise-profil: " + profile.name + " (" + matResult.pct + "%) | Arketype: " + archetype.name;
+  var text = profile.name + ": " + profile.status + " | " + archetype.name + ": " + archetype.subtitle;
+  var url = "https://matrise.enkelliv.no";
+  if (navigator.share) {
+    navigator.share({ title: title, text: text, url: url }).catch(function(){});
+  } else {
+    navigator.clipboard.writeText(title + "\n\n" + text + "\n" + url).then(function(){
+      alert("Kopiert! Lim inn p\u00e5 Facebook, Messenger eller hvor du vil dele.");
+    }).catch(function(){
+      prompt("Kopier:", title + "\n\n" + text + "\n" + url);
+    });
+  }
+});
+
+// ==================== RESTART ====================
+document.getElementById("btn-restart").addEventListener("click", function(){
+  hideAll();
+  stepLanding.classList.remove("hidden");
+  stepLanding.classList.add("fade-in");
+  setTimeout(function(){ stepLanding.classList.remove("fade-in"); }, 600);
+  currentVaknoppQ = 0;
+  currentMatriseQ = 0;
+  vaknoppAnswers = [];
+  matriseAnswers = [];
+  if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+});
+
+// ==================== INIT ====================
+stepLanding.classList.remove("hidden");
+</script>
+</body>
+</html>
