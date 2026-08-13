@@ -236,6 +236,8 @@ footer{font-size:.6rem;color:var(--muted);opacity:.5;margin-top:1rem;text-align:
 
 </style>
 
+<!-- Umami analytics -->
+<script defer src="https://stats-sand-ten.vercel.app/script.js" data-website-id="37258151-cc6c-4480-9aa9-ac99ebd6272c"></script>
 </head>
 
 <body>
@@ -756,6 +758,7 @@ document.getElementById("btn-skip").addEventListener("click", function(){
 // ==================== VAKNOPP QUIZ ====================
 
 function startVaknopp() {
+  window.umami && window.umami.track('test_started');
 
   hideAll();
 
@@ -1044,6 +1047,7 @@ function calcMatriseResult() {
 // ==================== SHOW RESULT ====================
 
 function showResult() {
+  window.umami && window.umami.track('test_completed');
 
   var vakResult = calcVaknoppResult();
 
