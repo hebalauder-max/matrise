@@ -314,7 +314,7 @@ footer{font-size:.6rem;color:var(--muted);opacity:.5;margin-top:1rem;text-align:
 <p style="font-size:.85rem;color:var(--muted);line-height:1.5">Våknopp + Matrise. To kapitler. Ett speil.</p>
 <p style="font-size:.7rem;color:var(--gold);margin-bottom:.4rem;font-style:italic">99 kr fra 1. september · Gratis i lanseringsfasen nå</p>
 <button class="btn" id="btn-skip" style="width:100%;margin-bottom:.7rem">Start testen gratis</button>
-<button class="btn ghost" id="btn-vipps">Betal med Vipps (kommer snart)</button>
+<button class="btn ghost" id="btn-vipps">Betal med Vipps</button>
 </div>
 </div>
 
@@ -733,13 +733,34 @@ document.getElementById("btn-start").addEventListener("click", function(){
 
 // ==================== PAYMENT ====================
 
+var API_BASE = "https://vaaknopp-backend.vercel.app";
+
 document.getElementById("btn-vipps").addEventListener("click", function(){
 
-  alert("Vipps-integrasjon kommer \u2014 forel\u00f8pig kan du teste gratis.");
+  var btn = document.getElementById("btn-vipps");
+  btn.textContent = "Kobler til Vipps...";
+  btn.disabled = true;
 
-  hasPaid = true;
-
-  startVaknopp();
+  fetch(API_BASE + "/api/create-payment", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: "{}"
+  })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if (data.redirectUrl) {
+        window.location.href = data.redirectUrl;
+      } else {
+        alert("Kunne ikke starte betaling: " + (data.error || "ukjent feil"));
+        btn.textContent = "Betal med Vipps";
+        btn.disabled = false;
+      }
+    })
+    .catch(function(){
+      alert("Kunne ikke koble til betalingstjenesten.");
+      btn.textContent = "Betal med Vipps";
+      btn.disabled = false;
+    });
 
 });
 
@@ -1273,7 +1294,41 @@ document.getElementById("btn-restart").addEventListener("click", function(){
 
 // ==================== INIT ====================
 var urlParams = new URLSearchParams(window.location.search);
-if (urlParams.get("start") === "1") {
+var paymentRef = urlParams.get("paymentRef");
+
+function pollPayment(ref, tries) {
+  fetch(API_BASE + "/api/payment-status?ref=" + encodeURIComponent(ref))
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if (data.state === "CAPTURED") {
+        hasPaid = true;
+        startVaknopp();
+      } else if (data.state === "AUTHORIZED") {
+        // Capture to actually move the funds, then unlock.
+        fetch(API_BASE + "/api/capture-payment", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({reference: ref})
+        }).catch(function(){}).then(function(){
+          hasPaid = true;
+          startVaknopp();
+        });
+      } else if (data.state === "TERMINATED") {
+        stepLanding.classList.remove("hidden");
+      } else if (tries > 0) {
+        setTimeout(function(){ pollPayment(ref, tries - 1); }, 2000);
+      } else {
+        stepLanding.classList.remove("hidden");
+      }
+    })
+    .catch(function(){
+      stepLanding.classList.remove("hidden");
+    });
+}
+
+if (paymentRef) {
+  pollPayment(paymentRef, 15);
+} else if (urlParams.get("start") === "1") {
   hasPaid = true;
   startVaknopp();
 } else {
