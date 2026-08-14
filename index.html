@@ -60,6 +60,15 @@ html,body{width:100%;min-height:100vh;background:var(--bg);color:var(--text);fon
 
 .btn.ghost:hover{border-color:var(--accent);color:var(--accent);background:transparent}
 
+/* === EMAIL CAPTURE === */
+#email-capture{margin-top:.2rem;width:100%;max-width:480px;text-align:center}
+#email-capture .capture-title{font-size:.8rem;color:var(--gold);text-transform:uppercase;letter-spacing:2px;margin-bottom:.6rem}
+#email-capture form{display:flex;flex-direction:column;gap:.6rem;width:100%}
+#email-capture input{background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:Georgia,serif;font-size:.9rem;padding:.7rem .9rem;border-radius:3px;width:100%;box-sizing:border-box}
+#email-capture input:focus{outline:none;border-color:var(--accent)}
+#email-capture .capture-note{font-size:.62rem;color:var(--muted);margin-top:.5rem;line-height:1.5;opacity:.8}
+#email-capture .capture-ok{font-size:.8rem;color:var(--gold);margin-top:.4rem;display:none}
+
 h1{font-size:1.5rem;font-weight:400;margin-bottom:.5rem}
 
 h2{font-size:1.1rem;font-weight:400;margin-bottom:.5rem}
@@ -491,6 +500,17 @@ footer{font-size:.6rem;color:var(--muted);opacity:.5;margin-top:1rem;text-align:
 
 <button class="btn small" id="btn-share">Del resultat</button>
 
+</div>
+
+<div id="email-capture">
+  <div class="capture-title">Få sertifikatet tilsendt</div>
+  <form id="capture-form" novalidate>
+    <input type="email" id="capture-email" name="email" placeholder="Din e-post" required autocomplete="email">
+    <input type="text" id="capture-name" name="name" placeholder="Navn (valgfritt)" autocomplete="name" maxlength="200">
+    <button type="submit" class="btn small" id="btn-capture">Send meg sertifikatet</button>
+  </form>
+  <div class="capture-ok" id="capture-ok">Sendt ✓ Sjekk innboksen din.</div>
+  <div class="capture-note">Vi bruker kun e-posten din til å sende sertifikatet ditt. Ingen nyhetsbrev uten ditt samtykke. Du kan be om sletting når som helst.</div>
 </div>
 
 <button class="btn ghost" id="btn-restart" style="margin-top:.5rem">Start på nytt</button>
@@ -1291,6 +1311,40 @@ document.getElementById("btn-restart").addEventListener("click", function(){
 });
 
 
+
+// ==================== EMAIL CAPTURE ====================
+document.getElementById("capture-form").addEventListener("submit", function(e){
+  e.preventDefault();
+  var emailInput = document.getElementById("capture-email");
+  var nameInput = document.getElementById("capture-name");
+  var email = emailInput.value.trim();
+  var name = nameInput.value.trim();
+  if (!email) { emailInput.focus(); return; }
+  var btn = document.getElementById("btn-capture");
+  btn.disabled = true;
+  btn.textContent = "Sender...";
+  fetch(API_BASE + "/api/subscribe", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ email: email, name: name, source: "matrise-result" })
+  }).then(function(r){ return r.json(); })
+    .then(function(data){
+      btn.disabled = false;
+      if (data && data.ok) {
+        document.getElementById("capture-form").style.display = "none";
+        var ok = document.getElementById("capture-ok");
+        ok.style.display = "block";
+      } else {
+        btn.textContent = "Send meg sertifikatet";
+        alert(data && data.error ? data.error : "Kunne ikke sende. Prøv igjen.");
+      }
+    })
+    .catch(function(){
+      btn.disabled = false;
+      btn.textContent = "Send meg sertifikatet";
+      alert("Kunne ikke koble til. Sjekk nettet og prøv igjen.");
+    });
+});
 
 // ==================== INIT ====================
 var urlParams = new URLSearchParams(window.location.search);
