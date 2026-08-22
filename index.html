@@ -529,6 +529,28 @@ footer{font-size:.6rem;color:var(--muted);opacity:.5;margin-top:1rem;text-align:
 
 <script>
 
+// --- Umami-safe event tracking (queues events until analytics loads) ---
+var _umamiQueue = [];
+function trackEvent(name, data) {
+  if (window.umami && typeof window.umami.track === "function") {
+    window.umami.track(name, data);
+  } else {
+    _umamiQueue.push({ name: name, data: data });
+  }
+}
+function _flushUmamiQueue() {
+  while (_umamiQueue.length && window.umami && typeof window.umami.track === "function") {
+    var ev = _umamiQueue.shift();
+    window.umami.track(ev.name, ev.data);
+  }
+}
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", _flushUmamiQueue);
+} else {
+  _flushUmamiQueue();
+}
+window.addEventListener("load", _flushUmamiQueue);
+
 // ==================== DATA: VAKNOPP QUESTIONS ====================
 
 var vaknoppQuestions = [
@@ -801,7 +823,7 @@ document.getElementById("btn-skip").addEventListener("click", function(){
 // ==================== VAKNOPP QUIZ ====================
 
 function startVaknopp() {
-  window.umami && window.umami.track('test_started');
+  trackEvent('test_started');
 
   hideAll();
 
@@ -1090,7 +1112,7 @@ function calcMatriseResult() {
 // ==================== SHOW RESULT ====================
 
 function showResult() {
-  window.umami && window.umami.track('test_completed');
+  trackEvent('test_completed');
 
   var vakResult = calcVaknoppResult();
 
